@@ -14,7 +14,7 @@ const CYCLE_DAYS = {
   4: { name: 'Descanso gym', emoji: '🏃', canRun: true, runNote: '✅ Carrera larga OBLIGATORIA' },
 };
 
-const USER_ID = 'diego-athlete';
+const USER_ID = '00000000-0000-0000-0000-000000000001';
 
 export default function GymPage() {
   const [currentDay, setCurrentDay] = useState<number>(1);
