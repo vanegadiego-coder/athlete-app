@@ -83,7 +83,6 @@ export default function GymPage() {
         date: today,
         cycle_day: currentDay,
         attended,
-        updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,date' });
 
       if (error) throw error;
