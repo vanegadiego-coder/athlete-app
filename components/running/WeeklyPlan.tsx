@@ -26,7 +26,7 @@ export default function WeeklyPlan({ week, plan, completedRuns }: Props) {
         <div>
           <h2 className="font-bold text-gray-900">Semana {week} — {plan?.title || 'Plan actual'}</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Bloque {plan?.block_number || '—'} {plan?.discharge_week ? '· Semana de descarga 💤' : ''}
+            Bloque {plan?.block || '—'} {plan?.is_deload ? '· Semana de descarga 💤' : ''}
           </p>
         </div>
         {plan && (
@@ -49,7 +49,7 @@ export default function WeeklyPlan({ week, plan, completedRuns }: Props) {
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ZONE_COLORS[run.type] || 'bg-gray-100 text-gray-700'}`}>
                     {run.type}
                   </span>
-                  {run.optional && <span className="text-xs text-gray-400">opcional</span>}
+                  {run.is_optional && <span className="text-xs text-gray-400">opcional</span>}
                 </div>
                 <p className="text-sm text-gray-700 mt-1">{run.description}</p>
                 <div className="flex gap-3 mt-1 text-xs text-gray-400">

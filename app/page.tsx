@@ -42,19 +42,19 @@ export default function Dashboard() {
     const [cycleRes, gymLogRes, mealsRes, suppRes, runsRes] = await Promise.all([
       supabase.from('gym_cycle').select('current_day').eq('user_id', USER_ID).single(),
       supabase.from('gym_log').select('attended').eq('user_id', USER_ID).eq('date', today).single(),
-      supabase.from('meals').select('calories,protein').eq('user_id', USER_ID).eq('date', today),
-      supabase.from('supplements_log').select('creatine_taken,magnesium_taken').eq('user_id', USER_ID).eq('date', today).single(),
+      supabase.from('nutrition_log').select('calories,protein_g').eq('user_id', USER_ID).eq('date', today).single(),
+      supabase.from('supplements_log').select('creatine_5g,magnesium_210mg').eq('user_id', USER_ID).eq('date', today).single(),
       supabase.from('runs_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(1),
     ]);
     if (cycleRes.data) setGymDay(cycleRes.data.current_day);
     if (gymLogRes.data) setGymCheckedIn(true);
     if (mealsRes.data) {
-      setCalories(mealsRes.data.reduce((s: number, m: any) => s + (m.calories || 0), 0));
-      setProtein(mealsRes.data.reduce((s: number, m: any) => s + (m.protein || 0), 0));
+      setCalories(mealsRes.data.calories || 0);
+      setProtein(mealsRes.data.protein_g || 0);
     }
     if (suppRes.data) {
-      setCreatine(suppRes.data.creatine_taken || false);
-      setMagnesium(suppRes.data.magnesium_taken || false);
+      setCreatine(suppRes.data.creatine_5g || false);
+      setMagnesium(suppRes.data.magnesium_210mg || false);
     }
     if (runsRes.data?.[0]) setRecentRun(runsRes.data[0]);
     setLoading(false);
@@ -150,8 +150,8 @@ export default function Dashboard() {
                   <div>
                     <p className="font-semibold text-gray-900">{recentRun.distance_km}km · {recentRun.type}</p>
                     <div className="flex gap-2 text-xs text-gray-500">
-                      <span>{recentRun.duration_min}min</span>
-                      {recentRun.avg_bpm && <span>❤️ {recentRun.avg_bpm} bpm</span>}
+                      {recentRun.duration_sec && <span>{Math.round(recentRun.duration_sec / 60)}min</span>}
+                      {recentRun.avg_hr && <span>❤️ {recentRun.avg_hr} bpm</span>}
                       <span>{new Date(recentRun.date + 'T12:00:00').toLocaleDateString('es-PA', { weekday: 'short', day: 'numeric' })}</span>
                     </div>
                   </div>

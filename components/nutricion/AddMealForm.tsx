@@ -4,13 +4,12 @@ import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 interface Props {
-  userId: string;
-  date: string;
+  nutritionLogId: string;
   onClose: () => void;
   onSaved: () => void;
 }
 
-export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
+export default function AddMealForm({ nutritionLogId, onClose, onSaved }: Props) {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -30,10 +29,7 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
   }
 
   async function analyze() {
-    if (!description && !image) {
-      setError('Escribe una descripción o toma una foto');
-      return;
-    }
+    if (!description && !image) { setError('Escribe una descripción o toma una foto'); return; }
     setError('');
     setAnalyzing(true);
     try {
@@ -54,34 +50,30 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
     if (!result) return;
     setSaving(true);
     const { error: dbErr } = await supabase.from('meals').insert({
-      user_id: userId,
-      date,
-      name: result.name,
+      nutrition_log_id: nutritionLogId,
+      food_description: result.name,
       calories: Math.round(result.calories),
-      protein: result.protein,
-      carbs: result.carbs,
-      fat: result.fat,
-      notes: result.notes,
-      ai_analyzed: true,
+      protein_g: result.protein,
+      carbs_g: result.carbs,
+      fats_g: result.fat,
+      estimated_by_ai: true,
     });
     if (dbErr) { setError(dbErr.message); setSaving(false); return; }
-    onSaved();
-  }
 
-  async function saveManual() {
-    if (!description) return;
-    setSaving(true);
-    const { error: dbErr } = await supabase.from('meals').insert({
-      user_id: userId,
-      date,
-      name: description,
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      ai_analyzed: false,
-    });
-    if (dbErr) { setError(dbErr.message); setSaving(false); return; }
+    // Update nutrition_log totals
+    const { data: allMeals } = await supabase
+      .from('meals')
+      .select('calories,protein_g,carbs_g,fats_g')
+      .eq('nutrition_log_id', nutritionLogId);
+
+    if (allMeals) {
+      await supabase.from('nutrition_log').update({
+        calories: allMeals.reduce((s, m) => s + (m.calories || 0), 0),
+        protein_g: allMeals.reduce((s, m) => s + (m.protein_g || 0), 0),
+        carbs_g: allMeals.reduce((s, m) => s + (m.carbs_g || 0), 0),
+        fats_g: allMeals.reduce((s, m) => s + (m.fats_g || 0), 0),
+      }).eq('id', nutritionLogId);
+    }
     onSaved();
   }
 
@@ -94,7 +86,6 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
         </div>
 
         <div className="p-5 space-y-4">
-          {/* Image upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Foto (opcional)</label>
             {imagePreview ? (
@@ -103,9 +94,7 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
                 <button
                   onClick={() => { setImage(null); setImagePreview(null); }}
                   className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
-                >
-                  ×
-                </button>
+                >×</button>
               </div>
             ) : (
               <button
@@ -119,7 +108,6 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
             <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleImageChange} className="hidden" />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
             <textarea
@@ -133,7 +121,6 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
 
           {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p>}
 
-          {/* AI Result */}
           {result && (
             <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4 space-y-2">
               <div className="flex items-center gap-2">
@@ -141,28 +128,15 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
                 <p className="font-bold text-gray-900 text-sm">{result.name}</p>
               </div>
               <div className="grid grid-cols-4 gap-2 text-center">
-                <div>
-                  <p className="text-lg font-black text-orange-600">{Math.round(result.calories)}</p>
-                  <p className="text-xs text-gray-500">kcal</p>
-                </div>
-                <div>
-                  <p className="text-lg font-black text-blue-600">{Math.round(result.protein)}g</p>
-                  <p className="text-xs text-gray-500">prot</p>
-                </div>
-                <div>
-                  <p className="text-lg font-black text-yellow-600">{Math.round(result.carbs)}g</p>
-                  <p className="text-xs text-gray-500">carbs</p>
-                </div>
-                <div>
-                  <p className="text-lg font-black text-red-500">{Math.round(result.fat)}g</p>
-                  <p className="text-xs text-gray-500">grasas</p>
-                </div>
+                <div><p className="text-lg font-black text-orange-600">{Math.round(result.calories)}</p><p className="text-xs text-gray-500">kcal</p></div>
+                <div><p className="text-lg font-black text-blue-600">{Math.round(result.protein)}g</p><p className="text-xs text-gray-500">prot</p></div>
+                <div><p className="text-lg font-black text-yellow-600">{Math.round(result.carbs)}g</p><p className="text-xs text-gray-500">carbs</p></div>
+                <div><p className="text-lg font-black text-red-500">{Math.round(result.fat)}g</p><p className="text-xs text-gray-500">grasas</p></div>
               </div>
               {result.notes && <p className="text-xs text-gray-500 italic">{result.notes}</p>}
             </div>
           )}
 
-          {/* Actions */}
           <div className="space-y-2 pt-1">
             {!result ? (
               <button
@@ -181,9 +155,7 @@ export default function AddMealForm({ userId, date, onClose, onSaved }: Props) {
                 {saving ? 'Guardando...' : '✓ Guardar comida'}
               </button>
             )}
-            <button onClick={onClose} className="w-full text-gray-500 py-2 text-sm">
-              Cancelar
-            </button>
+            <button onClick={onClose} className="w-full text-gray-500 py-2 text-sm">Cancelar</button>
           </div>
         </div>
       </div>

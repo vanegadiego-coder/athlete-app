@@ -2,13 +2,12 @@
 
 interface Meal {
   id: string;
-  name: string;
+  food_description: string;
   calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  ai_analyzed?: boolean;
-  notes?: string;
+  protein_g: number;
+  carbs_g: number;
+  fats_g: number;
+  estimated_by_ai?: boolean;
 }
 
 interface Props {
@@ -37,25 +36,22 @@ export default function MealList({ meals, onDelete }: Props) {
           <div key={meal.id} className="px-4 py-3 flex items-start gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-gray-900 text-sm truncate">{meal.name}</p>
-                {meal.ai_analyzed && (
+                <p className="font-semibold text-gray-900 text-sm truncate">{meal.food_description}</p>
+                {meal.estimated_by_ai && (
                   <span className="text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full shrink-0">IA</span>
                 )}
               </div>
               <div className="flex gap-3 mt-1 text-xs text-gray-500">
                 <span className="font-semibold text-orange-600">{meal.calories} kcal</span>
-                <span>P: {Math.round(meal.protein)}g</span>
-                <span>C: {Math.round(meal.carbs)}g</span>
-                <span>G: {Math.round(meal.fat)}g</span>
+                <span>P: {Math.round(meal.protein_g)}g</span>
+                <span>C: {Math.round(meal.carbs_g)}g</span>
+                <span>G: {Math.round(meal.fats_g)}g</span>
               </div>
-              {meal.notes && <p className="text-xs text-gray-400 mt-1 truncate">{meal.notes}</p>}
             </div>
             <button
               onClick={() => onDelete(meal.id)}
               className="text-gray-300 hover:text-red-400 transition text-lg shrink-0 mt-0.5"
-            >
-              ×
-            </button>
+            >×</button>
           </div>
         ))}
       </div>

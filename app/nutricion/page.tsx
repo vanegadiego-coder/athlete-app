@@ -14,6 +14,7 @@ const TARGET_CALORIES = 2200;
 const TARGET_PROTEIN = 100;
 
 export default function NutricionPage() {
+  const [nutritionLog, setNutritionLog] = useState<any>(null);
   const [meals, setMeals] = useState<any[]>([]);
   const [supplements, setSupplements] = useState<any>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -25,10 +26,32 @@ export default function NutricionPage() {
 
   async function loadData() {
     setLoading(true);
+
+    // Get or create today's nutrition log
+    let { data: log } = await supabase
+      .from('nutrition_log')
+      .select('*')
+      .eq('user_id', USER_ID)
+      .eq('date', today)
+      .single();
+
+    if (!log) {
+      const { data: newLog } = await supabase
+        .from('nutrition_log')
+        .insert({ user_id: USER_ID, date: today, calories: 0, protein_g: 0, carbs_g: 0, fats_g: 0 })
+        .select()
+        .single();
+      log = newLog;
+    }
+
+    setNutritionLog(log);
+
+    // Load meals and supplements in parallel
     const [mealsRes, suppRes] = await Promise.all([
-      supabase.from('meals').select('*').eq('user_id', USER_ID).eq('date', today),
+      log ? supabase.from('meals').select('*').eq('nutrition_log_id', log.id) : Promise.resolve({ data: [] }),
       supabase.from('supplements_log').select('*').eq('user_id', USER_ID).eq('date', today).single(),
     ]);
+
     setMeals(mealsRes.data || []);
     setSupplements(suppRes.data || null);
     setLoading(false);
@@ -36,13 +59,27 @@ export default function NutricionPage() {
 
   async function deleteMeal(id: string) {
     await supabase.from('meals').delete().eq('id', id);
+    await recalcTotals(id);
+  }
+
+  async function recalcTotals(deletedId?: string) {
+    const { data: log } = await supabase.from('nutrition_log').select('id').eq('user_id', USER_ID).eq('date', today).single();
+    if (!log) { await loadData(); return; }
+    const { data: allMeals } = await supabase.from('meals').select('calories,protein_g,carbs_g,fats_g').eq('nutrition_log_id', log.id);
+    const remaining = (allMeals || []).filter((m: any) => m.id !== deletedId);
+    await supabase.from('nutrition_log').update({
+      calories: remaining.reduce((s: number, m: any) => s + (m.calories || 0), 0),
+      protein_g: remaining.reduce((s: number, m: any) => s + (m.protein_g || 0), 0),
+      carbs_g: remaining.reduce((s: number, m: any) => s + (m.carbs_g || 0), 0),
+      fats_g: remaining.reduce((s: number, m: any) => s + (m.fats_g || 0), 0),
+    }).eq('id', log.id);
     await loadData();
   }
 
-  const totalCalories = meals.reduce((s, m) => s + (m.calories || 0), 0);
-  const totalProtein = meals.reduce((s, m) => s + (m.protein || 0), 0);
-  const totalCarbs = meals.reduce((s, m) => s + (m.carbs || 0), 0);
-  const totalFat = meals.reduce((s, m) => s + (m.fat || 0), 0);
+  const totalCalories = nutritionLog?.calories || 0;
+  const totalProtein = nutritionLog?.protein_g || 0;
+  const totalCarbs = nutritionLog?.carbs_g || 0;
+  const totalFat = nutritionLog?.fats_g || 0;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -88,10 +125,9 @@ export default function NutricionPage() {
         )}
       </div>
 
-      {showAddForm && (
+      {showAddForm && nutritionLog && (
         <AddMealForm
-          userId={USER_ID}
-          date={today}
+          nutritionLogId={nutritionLog.id}
           onClose={() => setShowAddForm(false)}
           onSaved={() => { setShowAddForm(false); loadData(); }}
         />

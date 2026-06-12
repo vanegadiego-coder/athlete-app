@@ -32,7 +32,7 @@ export default function RunningPage() {
     setLoading(true);
     const [runsRes, planRes] = await Promise.all([
       supabase.from('runs_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(20),
-      supabase.from('training_plan').select('*, training_runs(*)').eq('user_id', USER_ID).eq('week_number', currentWeek).single(),
+      supabase.from('training_plan').select('*, training_runs(*)').eq('week_number', currentWeek).single(),
     ]);
     setRuns(runsRes.data || []);
     setWeekPlan(planRes.data || null);
@@ -50,8 +50,9 @@ export default function RunningPage() {
 
   const totalKmWeek = thisWeekRuns.reduce((s, r) => s + (r.distance_km || 0), 0);
   const totalKmAll = runs.reduce((s, r) => s + (r.distance_km || 0), 0);
-  const avgBpm = runs.length > 0
-    ? Math.round(runs.filter(r => r.avg_bpm).reduce((s, r) => s + r.avg_bpm, 0) / runs.filter(r => r.avg_bpm).length)
+  const runsWithHr = runs.filter(r => r.avg_hr);
+  const avgBpm = runsWithHr.length > 0
+    ? Math.round(runsWithHr.reduce((s, r) => s + r.avg_hr, 0) / runsWithHr.length)
     : 0;
 
   return (

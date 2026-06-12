@@ -17,10 +17,9 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
   const [type, setType] = useState('Z2 Fácil');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
-  const [avgBpm, setAvgBpm] = useState('');
-  const [maxBpm, setMaxBpm] = useState('');
+  const [avgHr, setAvgHr] = useState('');
+  const [maxHr, setMaxHr] = useState('');
   const [notes, setNotes] = useState('');
-  const [feltGood, setFeltGood] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const supabase = createClient();
@@ -28,24 +27,33 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
   async function save() {
     if (!distance || !duration) { setError('Distancia y duración son requeridas'); return; }
     setSaving(true);
+    const durationSec = Math.round(parseFloat(duration) * 60);
+    const distKm = parseFloat(distance);
+    const paceSecPerKm = durationSec / distKm;
+    const paceMin = Math.floor(paceSecPerKm / 60);
+    const paceSec = Math.round(paceSecPerKm % 60);
+    const avgPace = `${paceMin}:${String(paceSec).padStart(2, '0')} min/km`;
+
     const { error: dbErr } = await supabase.from('runs_log').insert({
       user_id: userId,
       date,
       type,
-      distance_km: parseFloat(distance),
-      duration_min: parseInt(duration),
-      avg_bpm: avgBpm ? parseInt(avgBpm) : null,
-      max_bpm: maxBpm ? parseInt(maxBpm) : null,
+      distance_km: distKm,
+      duration_sec: durationSec,
+      avg_pace: avgPace,
+      avg_hr: avgHr ? parseInt(avgHr) : null,
+      max_hr: maxHr ? parseInt(maxHr) : null,
       notes: notes || null,
-      week_number: weekNumber,
-      felt_good: feltGood,
     });
     if (dbErr) { setError(dbErr.message); setSaving(false); return; }
     onSaved();
   }
 
   const pace = distance && duration
-    ? (parseInt(duration) / parseFloat(distance)).toFixed(1)
+    ? (() => {
+        const sec = parseFloat(duration) * 60 / parseFloat(distance);
+        return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
+      })()
     : null;
 
   return (
@@ -81,7 +89,7 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Duración (min)</label>
-              <input type="number" value={duration} onChange={e => setDuration(e.target.value)}
+              <input type="number" step="0.5" value={duration} onChange={e => setDuration(e.target.value)}
                 placeholder="30"
                 className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
             </div>
@@ -96,13 +104,13 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">BPM promedio</label>
-              <input type="number" value={avgBpm} onChange={e => setAvgBpm(e.target.value)}
+              <input type="number" value={avgHr} onChange={e => setAvgHr(e.target.value)}
                 placeholder="148"
                 className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">BPM máximo</label>
-              <input type="number" value={maxBpm} onChange={e => setMaxBpm(e.target.value)}
+              <input type="number" value={maxHr} onChange={e => setMaxHr(e.target.value)}
                 placeholder="172"
                 className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
             </div>
@@ -114,21 +122,6 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
               placeholder="¿Cómo te sentiste? ¿Condiciones?"
               rows={2}
               className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none" />
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => setFeltGood(true)}
-              className={`flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition ${feltGood ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 text-gray-600 hover:border-green-400'}`}
-            >
-              😊 Me sentí bien
-            </button>
-            <button
-              onClick={() => setFeltGood(false)}
-              className={`flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition ${!feltGood ? 'bg-orange-400 border-orange-400 text-white' : 'border-gray-300 text-gray-600 hover:border-orange-400'}`}
-            >
-              😓 Duro
-            </button>
           </div>
 
           {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p>}

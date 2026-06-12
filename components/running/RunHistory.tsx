@@ -15,9 +15,9 @@ interface Run {
   date: string;
   type: string;
   distance_km: number;
-  duration_min: number;
-  avg_bpm?: number;
-  felt_good?: boolean;
+  duration_sec: number;
+  avg_pace?: string;
+  avg_hr?: number;
 }
 
 export default function RunHistory({ runs }: { runs: Run[] }) {
@@ -33,14 +33,12 @@ export default function RunHistory({ runs }: { runs: Run[] }) {
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-gray-100">
         <h2 className="font-bold text-gray-900">Historial ({runs.length})</h2>
       </div>
       <div className="divide-y divide-gray-100">
         {runs.map(run => {
-          const pace = run.duration_min && run.distance_km
-            ? (run.duration_min / run.distance_km).toFixed(1)
-            : null;
+          const durationMin = run.duration_sec ? Math.round(run.duration_sec / 60) : null;
           const dateStr = new Date(run.date + 'T12:00:00').toLocaleDateString('es-PA', { weekday: 'short', day: 'numeric', month: 'short' });
 
           return (
@@ -50,13 +48,12 @@ export default function RunHistory({ runs }: { runs: Run[] }) {
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-gray-900">{run.distance_km}km</p>
                   <span className="text-xs text-gray-500">{run.type}</span>
-                  {run.felt_good === false && <span className="text-xs">😓</span>}
                 </div>
                 <div className="flex gap-3 text-xs text-gray-400 mt-0.5">
                   <span>{dateStr}</span>
-                  <span>{run.duration_min}min</span>
-                  {pace && <span>{pace} min/km</span>}
-                  {run.avg_bpm && <span>❤️ {run.avg_bpm} bpm</span>}
+                  {durationMin && <span>{durationMin}min</span>}
+                  {run.avg_pace && <span>{run.avg_pace}</span>}
+                  {run.avg_hr && <span>❤️ {run.avg_hr} bpm</span>}
                 </div>
               </div>
             </div>
