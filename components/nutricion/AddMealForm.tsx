@@ -29,7 +29,7 @@ export default function AddMealForm({ nutritionLogId, onClose, onSaved }: Props)
   }
 
   async function analyze() {
-    if (!description && !image) { setError('Escribe una descripción o toma una foto'); return; }
+    if (!description && !image) { setError('Escribe una descripcion o toma una foto'); return; }
     setError('');
     setAnalyzing(true);
     try {
@@ -40,9 +40,7 @@ export default function AddMealForm({ nutritionLogId, onClose, onSaved }: Props)
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
-    } catch (e: any) {
-      setError('Error al analizar: ' + e.message);
-    }
+    } catch (e: any) { setError('Error: ' + e.message); }
     setAnalyzing(false);
   }
 
@@ -60,12 +58,7 @@ export default function AddMealForm({ nutritionLogId, onClose, onSaved }: Props)
     });
     if (dbErr) { setError(dbErr.message); setSaving(false); return; }
 
-    // Update nutrition_log totals
-    const { data: allMeals } = await supabase
-      .from('meals')
-      .select('calories,protein_g,carbs_g,fats_g')
-      .eq('nutrition_log_id', nutritionLogId);
-
+    const { data: allMeals } = await supabase.from('meals').select('calories,protein_g,carbs_g,fats_g').eq('nutrition_log_id', nutritionLogId);
     if (allMeals) {
       await supabase.from('nutrition_log').update({
         calories: allMeals.reduce((s, m) => s + (m.calories || 0), 0),
@@ -78,84 +71,73 @@ export default function AddMealForm({ nutritionLogId, onClose, onSaved }: Props)
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Agregar comida</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
+          <h2 className="text-base font-semibold">Agregar comida</h2>
+          <button onClick={onClose} className="text-zinc-300 hover:text-zinc-600 text-2xl leading-none transition-colors">×</button>
         </div>
 
         <div className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Foto (opcional)</label>
             {imagePreview ? (
               <div className="relative">
-                <img src={imagePreview} alt="preview" className="w-full h-40 object-cover rounded-lg" />
+                <img src={imagePreview} alt="preview" className="w-full h-36 object-cover rounded-xl" />
                 <button
                   onClick={() => { setImage(null); setImagePreview(null); }}
-                  className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
+                  className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
                 >×</button>
               </div>
             ) : (
               <button
                 onClick={() => fileRef.current?.click()}
-                className="w-full border-2 border-dashed border-gray-300 rounded-lg py-6 text-center hover:border-green-400 transition"
+                className="w-full border border-dashed border-zinc-300 rounded-xl py-8 text-center hover:border-zinc-500 transition-colors"
               >
-                <p className="text-3xl">📷</p>
-                <p className="text-sm text-gray-500 mt-1">Toca para agregar foto</p>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Agregar foto</p>
               </button>
             )}
             <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleImageChange} className="hidden" />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ej: 2 huevos revueltos, 1 arepa, jugo de naranja..."
+              placeholder="Describe lo que comiste — 2 huevos, arepa, jugo..."
               rows={3}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-400 resize-none"
+              className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-400 resize-none placeholder:text-zinc-300"
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p>}
+          {error && <p className="text-red-500 text-xs bg-red-50 rounded-lg p-3">{error}</p>}
 
           {result && (
-            <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-semibold">IA estimó</span>
-                <p className="font-bold text-gray-900 text-sm">{result.name}</p>
-              </div>
+            <div className="border border-zinc-200 rounded-xl p-4">
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Estimacion IA</p>
+              <p className="text-sm font-semibold mb-3">{result.name}</p>
               <div className="grid grid-cols-4 gap-2 text-center">
-                <div><p className="text-lg font-black text-orange-600">{Math.round(result.calories)}</p><p className="text-xs text-gray-500">kcal</p></div>
-                <div><p className="text-lg font-black text-blue-600">{Math.round(result.protein)}g</p><p className="text-xs text-gray-500">prot</p></div>
-                <div><p className="text-lg font-black text-yellow-600">{Math.round(result.carbs)}g</p><p className="text-xs text-gray-500">carbs</p></div>
-                <div><p className="text-lg font-black text-red-500">{Math.round(result.fat)}g</p><p className="text-xs text-gray-500">grasas</p></div>
+                <div><p className="text-xl font-black tracking-tight">{Math.round(result.calories)}</p><p className="text-xs text-zinc-400">kcal</p></div>
+                <div><p className="text-xl font-black tracking-tight">{Math.round(result.protein)}g</p><p className="text-xs text-zinc-400">prot</p></div>
+                <div><p className="text-xl font-black tracking-tight">{Math.round(result.carbs)}g</p><p className="text-xs text-zinc-400">carbs</p></div>
+                <div><p className="text-xl font-black tracking-tight">{Math.round(result.fat)}g</p><p className="text-xs text-zinc-400">grasas</p></div>
               </div>
-              {result.notes && <p className="text-xs text-gray-500 italic">{result.notes}</p>}
+              {result.notes && <p className="text-xs text-zinc-400 mt-3">{result.notes}</p>}
             </div>
           )}
 
           <div className="space-y-2 pt-1">
             {!result ? (
-              <button
-                onClick={analyze}
-                disabled={analyzing || (!description && !image)}
-                className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition"
-              >
-                {analyzing ? '🤖 Analizando...' : '🤖 Analizar con IA'}
+              <button onClick={analyze} disabled={analyzing || (!description && !image)}
+                className="w-full bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 text-white disabled:text-zinc-400 font-semibold py-3 rounded-xl transition-colors text-sm">
+                {analyzing ? 'Analizando...' : 'Analizar con IA'}
               </button>
             ) : (
-              <button
-                onClick={save}
-                disabled={saving}
-                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition"
-              >
-                {saving ? 'Guardando...' : '✓ Guardar comida'}
+              <button onClick={save} disabled={saving}
+                className="w-full bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                {saving ? 'Guardando...' : 'Guardar comida'}
               </button>
             )}
-            <button onClick={onClose} className="w-full text-gray-500 py-2 text-sm">Cancelar</button>
+            <button onClick={onClose} className="w-full text-zinc-400 py-2 text-sm hover:text-zinc-600 transition-colors">Cancelar</button>
           </div>
         </div>
       </div>

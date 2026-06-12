@@ -8,15 +8,19 @@ import MacroProgress from '@/components/nutricion/MacroProgress';
 import MealList from '@/components/nutricion/MealList';
 import AddMealForm from '@/components/nutricion/AddMealForm';
 import SupplementTracker from '@/components/nutricion/SupplementTracker';
+import BarChart from '@/components/shared/BarChart';
 
 const USER_ID = '00000000-0000-0000-0000-000000000001';
 const TARGET_CALORIES = 2200;
 const TARGET_PROTEIN = 100;
 
+const DAY_ES: Record<number, string> = { 0:'Do',1:'Lu',2:'Ma',3:'Mi',4:'Ju',5:'Vi',6:'Sa' };
+
 export default function NutricionPage() {
   const [nutritionLog, setNutritionLog] = useState<any>(null);
   const [meals, setMeals] = useState<any[]>([]);
   const [supplements, setSupplements] = useState<any>(null);
+  const [weekHistory, setWeekHistory] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -26,111 +30,98 @@ export default function NutricionPage() {
 
   async function loadData() {
     setLoading(true);
-
-    // Get or create today's nutrition log
-    let { data: log } = await supabase
-      .from('nutrition_log')
-      .select('*')
-      .eq('user_id', USER_ID)
-      .eq('date', today)
-      .single();
-
+    let { data: log } = await supabase.from('nutrition_log').select('*').eq('user_id', USER_ID).eq('date', today).single();
     if (!log) {
-      const { data: newLog } = await supabase
-        .from('nutrition_log')
-        .insert({ user_id: USER_ID, date: today, calories: 0, protein_g: 0, carbs_g: 0, fats_g: 0 })
-        .select()
-        .single();
+      const { data: newLog } = await supabase.from('nutrition_log')
+        .insert({ user_id: USER_ID, date: today, calories: 0, protein_g: 0, carbs_g: 0, fats_g: 0 }).select().single();
       log = newLog;
     }
-
     setNutritionLog(log);
 
-    // Load meals and supplements in parallel
-    const [mealsRes, suppRes] = await Promise.all([
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+    const weekAgoStr = weekAgo.toISOString().split('T')[0];
+
+    const [mealsRes, suppRes, histRes] = await Promise.all([
       log ? supabase.from('meals').select('*').eq('nutrition_log_id', log.id) : Promise.resolve({ data: [] }),
       supabase.from('supplements_log').select('*').eq('user_id', USER_ID).eq('date', today).single(),
+      supabase.from('nutrition_log').select('date,calories,protein_g').eq('user_id', USER_ID).gte('date', weekAgoStr).order('date'),
     ]);
-
     setMeals(mealsRes.data || []);
     setSupplements(suppRes.data || null);
+    setWeekHistory(histRes.data || []);
     setLoading(false);
   }
 
   async function deleteMeal(id: string) {
     await supabase.from('meals').delete().eq('id', id);
-    await recalcTotals(id);
-  }
-
-  async function recalcTotals(deletedId?: string) {
     const { data: log } = await supabase.from('nutrition_log').select('id').eq('user_id', USER_ID).eq('date', today).single();
     if (!log) { await loadData(); return; }
     const { data: allMeals } = await supabase.from('meals').select('calories,protein_g,carbs_g,fats_g').eq('nutrition_log_id', log.id);
-    const remaining = (allMeals || []).filter((m: any) => m.id !== deletedId);
     await supabase.from('nutrition_log').update({
-      calories: remaining.reduce((s: number, m: any) => s + (m.calories || 0), 0),
-      protein_g: remaining.reduce((s: number, m: any) => s + (m.protein_g || 0), 0),
-      carbs_g: remaining.reduce((s: number, m: any) => s + (m.carbs_g || 0), 0),
-      fats_g: remaining.reduce((s: number, m: any) => s + (m.fats_g || 0), 0),
+      calories: (allMeals || []).reduce((s: number, m: any) => s + (m.calories || 0), 0),
+      protein_g: (allMeals || []).reduce((s: number, m: any) => s + (m.protein_g || 0), 0),
+      carbs_g: (allMeals || []).reduce((s: number, m: any) => s + (m.carbs_g || 0), 0),
+      fats_g: (allMeals || []).reduce((s: number, m: any) => s + (m.fats_g || 0), 0),
     }).eq('id', log.id);
     await loadData();
   }
 
-  const totalCalories = nutritionLog?.calories || 0;
-  const totalProtein = nutritionLog?.protein_g || 0;
-  const totalCarbs = nutritionLog?.carbs_g || 0;
-  const totalFat = nutritionLog?.fats_g || 0;
+  // Build 7-day calorie chart
+  const calorieBars = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6 - i));
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = weekHistory.find(h => h.date === dateStr);
+    return { label: DAY_ES[d.getDay()], value: entry?.calories || 0, isToday: dateStr === today };
+  });
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b-2 border-gray-200 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
-          <a href="/" className="text-gray-400 hover:text-gray-600 text-xl">←</a>
+    <main className="min-h-screen bg-zinc-50">
+      <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3">
+          <a href="/" className="text-zinc-400 hover:text-zinc-600 transition-colors">←</a>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">🍎 Nutrición</h1>
-            <p className="text-xs text-gray-500">{new Date().toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+            <h1 className="text-lg font-semibold tracking-tight">Nutricion</h1>
+            <p className="text-xs text-zinc-400 capitalize mt-0.5">{new Date().toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
           </div>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition"
-          >
+          <button onClick={() => setShowAddForm(true)} className="bg-zinc-900 hover:bg-zinc-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
             + Comida
           </button>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-2xl mx-auto px-5 py-5 space-y-3">
         {loading ? (
-          <p className="text-center text-gray-500 py-8">Cargando...</p>
+          <p className="text-center text-zinc-400 py-12 text-sm">Cargando...</p>
         ) : (
           <>
             <MacroProgress
-              calories={totalCalories}
-              protein={totalProtein}
-              carbs={totalCarbs}
-              fat={totalFat}
+              calories={nutritionLog?.calories || 0}
+              protein={nutritionLog?.protein_g || 0}
+              carbs={nutritionLog?.carbs_g || 0}
+              fat={nutritionLog?.fats_g || 0}
               targetCalories={TARGET_CALORIES}
               targetProtein={TARGET_PROTEIN}
             />
 
-            <SupplementTracker
-              userId={USER_ID}
-              date={today}
-              supplements={supplements}
-              onUpdate={loadData}
-            />
+            {/* 7-day calorie chart */}
+            {weekHistory.length > 0 && (
+              <div className="bg-white rounded-xl border border-zinc-200 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Calorias — ultimos 7 dias</p>
+                  <p className="text-xs text-zinc-400">Meta {TARGET_CALORIES}</p>
+                </div>
+                <BarChart bars={calorieBars} max={Math.max(TARGET_CALORIES * 1.1, ...calorieBars.map(b => b.value))} targetLine={TARGET_CALORIES} height={56} />
+              </div>
+            )}
 
+            <SupplementTracker userId={USER_ID} date={today} supplements={supplements} onUpdate={loadData} />
             <MealList meals={meals} onDelete={deleteMeal} />
           </>
         )}
       </div>
 
       {showAddForm && nutritionLog && (
-        <AddMealForm
-          nutritionLogId={nutritionLog.id}
-          onClose={() => setShowAddForm(false)}
-          onSaved={() => { setShowAddForm(false); loadData(); }}
-        />
+        <AddMealForm nutritionLogId={nutritionLog.id} onClose={() => setShowAddForm(false)} onSaved={() => { setShowAddForm(false); loadData(); }} />
       )}
     </main>
   );

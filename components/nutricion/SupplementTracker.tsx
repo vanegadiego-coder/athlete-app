@@ -26,28 +26,24 @@ export default function SupplementTracker({ userId, date, supplements, onUpdate 
   }
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-4">
-      <h2 className="text-base font-bold text-gray-900 mb-3">💊 Suplementos</h2>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+      <div className="px-5 py-3 border-b border-zinc-100">
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Suplementos</p>
+      </div>
+      <div className="grid grid-cols-2 divide-x divide-zinc-100">
         <button
           onClick={() => toggle('creatine_5g')}
-          className={`rounded-lg p-3 border-2 text-center transition ${
-            creatine ? 'bg-blue-500 border-blue-500 text-white' : 'bg-white border-gray-300 text-gray-700 hover:border-blue-400'
-          }`}
+          className={`px-5 py-4 text-left transition-colors ${creatine ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-700 hover:bg-zinc-50'}`}
         >
-          <p className="text-xl">⚡</p>
-          <p className="text-sm font-semibold mt-1">Creatina 5g</p>
-          <p className="text-xs mt-0.5 opacity-75">{creatine ? 'Tomada ✓' : 'Pendiente'}</p>
+          <p className="text-sm font-semibold">Creatina 5g</p>
+          <p className={`text-xs mt-0.5 ${creatine ? 'text-zinc-400' : 'text-zinc-300'}`}>{creatine ? 'Tomada' : 'Pendiente'}</p>
         </button>
         <button
           onClick={() => toggle('magnesium_210mg')}
-          className={`rounded-lg p-3 border-2 text-center transition ${
-            magnesium ? 'bg-purple-500 border-purple-500 text-white' : 'bg-white border-gray-300 text-gray-700 hover:border-purple-400'
-          }`}
+          className={`px-5 py-4 text-left transition-colors ${magnesium ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-700 hover:bg-zinc-50'}`}
         >
-          <p className="text-xl">🌙</p>
-          <p className="text-sm font-semibold mt-1">Magnesio 210mg</p>
-          <p className="text-xs mt-0.5 opacity-75">{magnesium ? 'Tomado ✓' : 'Noche'}</p>
+          <p className="text-sm font-semibold">Magnesio 210mg</p>
+          <p className={`text-xs mt-0.5 ${magnesium ? 'text-zinc-400' : 'text-zinc-300'}`}>{magnesium ? 'Tomado' : 'Noche'}</p>
         </button>
       </div>
     </div>

@@ -1,21 +1,28 @@
 'use client';
 
-const GYM_DAYS: Record<number, { name: string; emoji: string; canRun: boolean }> = {
-  1: { name: 'Pecho · Hombro · Tríceps', emoji: '💪', canRun: true },
-  2: { name: 'Espalda · Bíceps · Core', emoji: '🔙', canRun: true },
-  3: { name: 'Pierna · Movilidad', emoji: '🦵', canRun: false },
-  4: { name: 'Descanso gym', emoji: '🏃', canRun: true },
+const GYM_DAYS: Record<number, { name: string; canRun: boolean; note: string }> = {
+  1: { name: 'Pecho · Hombro · Triceps', canRun: true, note: 'Intervalos o Tempo' },
+  2: { name: 'Espalda · Biceps · Core', canRun: true, note: 'Z2 opcional' },
+  3: { name: 'Pierna · Movilidad', canRun: false, note: 'Sin carrera' },
+  4: { name: 'Descanso gym', canRun: true, note: 'Carrera larga obligatoria' },
 };
 
-const ZONE_COLORS: Record<string, string> = {
-  'Z2 Fácil': 'text-blue-700 bg-blue-50 border-blue-200',
-  'Larga Z2': 'text-blue-900 bg-blue-100 border-blue-300',
-  'Intervalos': 'text-red-700 bg-red-50 border-red-200',
-  'Tempo': 'text-orange-700 bg-orange-50 border-orange-200',
-  'Fartlek': 'text-purple-700 bg-purple-50 border-purple-200',
-  'Z3 Moderado': 'text-yellow-700 bg-yellow-50 border-yellow-200',
-  'Carrera Oficial': 'text-green-700 bg-green-100 border-green-300',
-};
+const DAY_ES: Record<number, string> = { 0: 'Dom', 1: 'Lun', 2: 'Mar', 3: 'Mie', 4: 'Jue', 5: 'Vie', 6: 'Sab' };
+const MONTH_ES: Record<number, string> = { 0:'ene',1:'feb',2:'mar',3:'abr',4:'may',5:'jun',6:'jul',7:'ago',8:'sep',9:'oct',10:'nov',11:'dic' };
+
+function getCycleDay(targetStr: string, todayStr: string, todayCycle: number): number {
+  const diff = Math.round((new Date(targetStr + 'T12:00:00').getTime() - new Date(todayStr + 'T12:00:00').getTime()) / 86400000);
+  return ((todayCycle - 1 + diff) % 4 + 4) % 4 + 1;
+}
+
+function getWeekDays(plan: any): string[] {
+  if (!plan?.start_date) return [];
+  const start = new Date(plan.start_date + 'T12:00:00');
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    return d.toISOString().split('T')[0];
+  });
+}
 
 interface Props {
   week: number;
@@ -26,198 +33,131 @@ interface Props {
   onLogRun: () => void;
 }
 
-function getCycleDayForDate(targetDateStr: string, todayStr: string, todayCycleDay: number): number {
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const todayTs = new Date(todayStr + 'T12:00:00').getTime();
-  const targetTs = new Date(targetDateStr + 'T12:00:00').getTime();
-  const diffDays = Math.round((targetTs - todayTs) / msPerDay);
-  return ((todayCycleDay - 1 + diffDays) % 4 + 4) % 4 + 1;
-}
-
-function getWeekDays(weekPlan: any): string[] {
-  if (!weekPlan) return [];
-  const start = new Date(weekPlan.start_date + 'T12:00:00');
-  const days: string[] = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    days.push(d.toISOString().split('T')[0]);
-  }
-  return days;
-}
-
-const DAY_NAMES_ES: Record<number, string> = { 0: 'Dom', 1: 'Lun', 2: 'Mar', 3: 'Mié', 4: 'Jue', 5: 'Vie', 6: 'Sáb' };
-
 export default function DayCalendar({ week, weekPlan, gymCycleDay, today, loggedRuns, onLogRun }: Props) {
   const weekDays = getWeekDays(weekPlan);
-
-  // Build a map of cycle_day → training_run for this week
   const runsByDay: Record<number, any> = {};
   if (weekPlan?.training_runs) {
-    for (const run of weekPlan.training_runs) {
-      runsByDay[run.cycle_day] = run;
-    }
+    for (const r of weekPlan.training_runs) runsByDay[r.cycle_day] = r;
   }
-
-  // Build a map of date → logged run
   const loggedByDate: Record<string, any> = {};
-  for (const run of loggedRuns) {
-    loggedByDate[run.date] = run;
-  }
+  for (const r of loggedRuns) loggedByDate[r.date] = r;
 
-  // Find today's planned run
-  const todayCycleDay = gymCycleDay;
-  const todayPlannedRun = runsByDay[todayCycleDay];
-  const gymInfo = GYM_DAYS[todayCycleDay];
+  const todayGym = GYM_DAYS[gymCycleDay];
+  const todayPlanned = runsByDay[gymCycleDay];
   const todayLogged = loggedByDate[today];
-  const todayDate = new Date(today + 'T12:00:00');
-  const todayDayName = DAY_NAMES_ES[todayDate.getDay()];
-  const todayDayNum = todayDate.getDate();
-  const todayMonthName = todayDate.toLocaleDateString('es-PA', { month: 'long' });
+  const todayObj = new Date(today + 'T12:00:00');
 
-  // Track which cycle days we've already assigned to avoid showing same run twice in a week
-  const assignedCycleDays = new Set<number>();
+  const assignedDays = new Set<number>();
 
   return (
-    <div className="space-y-4">
-      {/* TODAY card — big and prominent */}
-      <div className={`rounded-xl border-2 p-5 ${todayPlannedRun ? 'bg-blue-50 border-blue-400' : 'bg-gray-100 border-gray-300'}`}>
-        <div className="flex items-center justify-between mb-3">
+    <div className="space-y-3">
+      {/* TODAY card */}
+      <div className="bg-white rounded-xl border border-zinc-200 p-5">
+        <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-gray-500">HOY</p>
-            <p className="text-lg font-black text-gray-900 capitalize">
-              {todayDayName} {todayDayNum} de {todayMonthName}
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Hoy</p>
+            <p className="text-xl font-semibold tracking-tight mt-0.5 capitalize">
+              {DAY_ES[todayObj.getDay()]} {todayObj.getDate()} {MONTH_ES[todayObj.getMonth()]}
             </p>
           </div>
           <div className="text-right">
-            <span className="text-2xl">{gymInfo.emoji}</span>
-            <p className="text-xs text-gray-500 mt-0.5">Día {todayCycleDay}</p>
+            <p className="text-xs text-zinc-400">Dia {gymCycleDay} del ciclo</p>
+            <p className="text-xs text-zinc-300 mt-0.5">{todayGym.name}</p>
           </div>
         </div>
 
-        {!gymInfo.canRun ? (
-          <div className="bg-white rounded-lg px-4 py-3 border border-gray-200 text-center">
-            <p className="font-semibold text-gray-700">🦵 Día de pierna — sin carrera</p>
-            <p className="text-xs text-gray-400 mt-1">{gymInfo.name}</p>
+        {!todayGym.canRun ? (
+          <div className="border border-zinc-100 rounded-xl px-4 py-3">
+            <p className="text-sm font-medium text-zinc-500">Dia de pierna — sin carrera programada</p>
           </div>
-        ) : todayPlannedRun ? (
+        ) : todayPlanned ? (
           <div>
-            <div className={`rounded-lg px-4 py-3 border ${ZONE_COLORS[todayPlannedRun.type] || 'bg-white border-gray-200 text-gray-700'}`}>
-              <div className="flex items-center justify-between">
-                <p className="font-bold text-base">{todayPlannedRun.type}</p>
-                <div className="text-right text-sm font-semibold">
-                  {todayPlannedRun.duration_min > 0 && <span>{todayPlannedRun.duration_min} min</span>}
-                  {todayPlannedRun.distance_km > 0 && <span className="ml-2">· {todayPlannedRun.distance_km} km</span>}
-                </div>
+            <div className="border border-zinc-200 rounded-xl px-4 py-3 mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-semibold">{todayPlanned.type}</p>
+                <p className="text-sm text-zinc-400">
+                  {todayPlanned.duration_min > 0 && `${todayPlanned.duration_min} min`}
+                  {todayPlanned.distance_km > 0 && ` · ${todayPlanned.distance_km} km`}
+                </p>
               </div>
-              <p className="text-sm mt-1 opacity-80">{todayPlannedRun.description}</p>
-              <p className="text-xs mt-2 opacity-60">FC objetivo: {todayPlannedRun.fc_target}</p>
+              <p className="text-xs text-zinc-400">{todayPlanned.description}</p>
+              <p className="text-xs text-zinc-300 mt-1.5">FC: {todayPlanned.fc_target}</p>
             </div>
 
             {todayLogged ? (
-              <div className="mt-3 flex items-center gap-2 bg-green-100 rounded-lg px-3 py-2">
-                <span className="text-green-600 font-bold">✓ Completado</span>
-                <span className="text-sm text-green-700">
-                  {todayLogged.distance_km}km · {Math.round(todayLogged.duration_sec / 60)}min
+              <div className="bg-zinc-900 rounded-xl px-4 py-3 flex items-center justify-between">
+                <p className="text-sm font-semibold text-white">Completado</p>
+                <p className="text-xs text-zinc-400">
+                  {todayLogged.distance_km} km · {Math.round(todayLogged.duration_sec / 60)} min
                   {todayLogged.avg_hr ? ` · ${todayLogged.avg_hr} bpm` : ''}
-                </span>
+                </p>
               </div>
             ) : (
-              <button
-                onClick={onLogRun}
-                className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition text-sm"
-              >
-                + Registrar esta carrera
+              <button onClick={onLogRun} className="w-full bg-zinc-900 hover:bg-zinc-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                Registrar carrera
               </button>
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-lg px-4 py-3 border border-gray-200 text-center">
-            <p className="text-gray-500">Sin carrera programada hoy</p>
-            <p className="text-xs text-gray-400 mt-1">{gymInfo.name}</p>
+          <div className="border border-zinc-100 rounded-xl px-4 py-3">
+            <p className="text-sm text-zinc-400">Sin carrera programada para este dia</p>
           </div>
         )}
       </div>
 
       {/* Week view */}
       {weekDays.length > 0 && (
-        <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h2 className="font-bold text-gray-900 text-sm">
-              Semana {week} — {weekPlan?.title || ''}
-              {weekPlan?.is_deload ? ' · 💤 descarga' : ''}
-            </h2>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {weekPlan?.total_km_target && `Meta: ${weekPlan.total_km_target} km`}
-            </p>
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+          <div className="px-5 py-3 border-b border-zinc-100 flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Semana {week}{weekPlan?.title ? ` — ${weekPlan.title}` : ''}</p>
+            {weekPlan?.total_km_target && <p className="text-xs text-zinc-400">Meta {weekPlan.total_km_target} km</p>}
           </div>
-          <div className="divide-y divide-gray-100">
+
+          <div className="divide-y divide-zinc-100">
             {weekDays.map(dateStr => {
-              const dateObj = new Date(dateStr + 'T12:00:00');
-              const dayName = DAY_NAMES_ES[dateObj.getDay()];
-              const dayNum = dateObj.getDate();
+              const d = new Date(dateStr + 'T12:00:00');
               const isToday = dateStr === today;
               const isPast = dateStr < today;
-              const cycleDay = getCycleDayForDate(dateStr, today, gymCycleDay);
+              const cycleDay = getCycleDay(dateStr, today, gymCycleDay);
               const gym = GYM_DAYS[cycleDay];
-
-              // Only show a planned run for each cycle_day once
-              let plannedRun = null;
-              if (!assignedCycleDays.has(cycleDay) && runsByDay[cycleDay]) {
-                plannedRun = runsByDay[cycleDay];
-                assignedCycleDays.add(cycleDay);
+              let planned = null;
+              if (!assignedDays.has(cycleDay) && runsByDay[cycleDay]) {
+                planned = runsByDay[cycleDay];
+                assignedDays.add(cycleDay);
               }
-
               const logged = loggedByDate[dateStr];
 
               return (
-                <div
-                  key={dateStr}
-                  className={`px-4 py-3 flex items-start gap-3 ${isToday ? 'bg-blue-50' : ''} ${isPast ? 'opacity-60' : ''}`}
-                >
-                  {/* Day column */}
-                  <div className="shrink-0 w-10 text-center">
-                    <p className={`text-xs font-bold ${isToday ? 'text-blue-600' : 'text-gray-400'}`}>{dayName}</p>
-                    <p className={`text-lg font-black leading-tight ${isToday ? 'text-blue-700' : 'text-gray-700'}`}>{dayNum}</p>
+                <div key={dateStr} className={`px-5 py-3 flex items-start gap-4 ${isToday ? 'bg-zinc-50' : ''}`}>
+                  <div className="shrink-0 w-9 text-center pt-0.5">
+                    <p className={`text-xs ${isToday ? 'text-zinc-900 font-bold' : 'text-zinc-300'}`}>{DAY_ES[d.getDay()]}</p>
+                    <p className={`text-base font-bold leading-tight ${isToday ? 'text-zinc-900' : isPast ? 'text-zinc-300' : 'text-zinc-600'}`}>{d.getDate()}</p>
                   </div>
 
-                  {/* Content */}
                   <div className="flex-1 min-w-0 py-0.5">
                     {!gym.canRun ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">🦵</span>
-                        <span className="text-sm text-gray-500">Sin carrera · {gym.name}</span>
-                      </div>
-                    ) : plannedRun ? (
+                      <p className="text-sm text-zinc-300">Sin carrera · {gym.name.split(' · ')[0]}</p>
+                    ) : planned ? (
                       <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${ZONE_COLORS[plannedRun.type] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
-                            {plannedRun.type}
-                          </span>
-                          {plannedRun.is_optional && <span className="text-xs text-gray-400">opcional</span>}
-                          <span className="text-xs text-gray-500">
-                            {plannedRun.duration_min > 0 ? `${plannedRun.duration_min}min` : ''} {plannedRun.distance_km > 0 ? `· ${plannedRun.distance_km}km` : ''}
-                          </span>
+                        <div className="flex items-center justify-between">
+                          <p className={`text-sm font-medium ${isPast && !logged ? 'text-zinc-300' : 'text-zinc-700'}`}>{planned.type}</p>
+                          <p className={`text-xs ${isPast && !logged ? 'text-zinc-200' : 'text-zinc-400'}`}>
+                            {planned.duration_min > 0 ? `${planned.duration_min}min` : ''}{planned.distance_km > 0 ? ` · ${planned.distance_km}km` : ''}
+                            {planned.is_optional ? ' · opcional' : ''}
+                          </p>
                         </div>
                         {logged && (
-                          <p className="text-xs text-green-600 font-semibold mt-1">
-                            ✓ {logged.distance_km}km · {Math.round(logged.duration_sec / 60)}min
-                            {logged.avg_hr ? ` · ${logged.avg_hr}bpm` : ''}
+                          <p className="text-xs text-zinc-500 font-medium mt-0.5">
+                            {logged.distance_km} km · {Math.round(logged.duration_sec / 60)} min{logged.avg_hr ? ` · ${logged.avg_hr} bpm` : ''}
                           </p>
                         )}
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-400">{gym.emoji}</span>
-                        <span className="text-sm text-gray-400">Gym {gym.name.split('·')[0].trim()}</span>
-                        {logged && (
-                          <span className="text-xs text-green-600 font-semibold ml-auto">✓ {logged.distance_km}km</span>
-                        )}
-                      </div>
+                      <p className="text-sm text-zinc-300">{gym.name.split(' · ')[0]}</p>
                     )}
                   </div>
 
-                  {isToday && <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500 mt-2" />}
+                  {isToday && <div className="w-1 h-1 rounded-full bg-zinc-900 shrink-0 mt-2" />}
                 </div>
               );
             })}

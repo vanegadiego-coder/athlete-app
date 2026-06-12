@@ -10,11 +10,11 @@ const PLAN_START = new Date('2026-06-03');
 const TARGET_CALORIES = 2200;
 const TARGET_PROTEIN = 100;
 
-const CYCLE_DAYS: Record<number, { name: string; emoji: string }> = {
-  1: { name: 'Pecho / Hombro / Tríceps', emoji: '💪' },
-  2: { name: 'Espalda / Bíceps / Core', emoji: '🔙' },
-  3: { name: 'Pierna / Movilidad', emoji: '🦵' },
-  4: { name: 'Descanso gym', emoji: '🏃' },
+const CYCLE_NAMES: Record<number, string> = {
+  1: 'Pecho · Hombro · Triceps',
+  2: 'Espalda · Biceps · Core',
+  3: 'Pierna · Movilidad',
+  4: 'Descanso gym',
 };
 
 function getCurrentWeek(): number {
@@ -39,7 +39,7 @@ export default function Dashboard() {
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
-    const [cycleRes, gymLogRes, mealsRes, suppRes, runsRes] = await Promise.all([
+    const [cycleRes, gymLogRes, nutritionRes, suppRes, runsRes] = await Promise.all([
       supabase.from('gym_cycle').select('current_day').eq('user_id', USER_ID).single(),
       supabase.from('gym_log').select('attended').eq('user_id', USER_ID).eq('date', today).single(),
       supabase.from('nutrition_log').select('calories,protein_g').eq('user_id', USER_ID).eq('date', today).single(),
@@ -48,9 +48,9 @@ export default function Dashboard() {
     ]);
     if (cycleRes.data) setGymDay(cycleRes.data.current_day);
     if (gymLogRes.data) setGymCheckedIn(true);
-    if (mealsRes.data) {
-      setCalories(mealsRes.data.calories || 0);
-      setProtein(mealsRes.data.protein_g || 0);
+    if (nutritionRes.data) {
+      setCalories(nutritionRes.data.calories || 0);
+      setProtein(nutritionRes.data.protein_g || 0);
     }
     if (suppRes.data) {
       setCreatine(suppRes.data.creatine_5g || false);
@@ -64,120 +64,98 @@ export default function Dashboard() {
   const protPct = Math.min(100, Math.round((protein / TARGET_PROTEIN) * 100));
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b-2 border-gray-200 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+    <main className="min-h-screen bg-zinc-50">
+      <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-5 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">⚡ Diego</h1>
-            <p className="text-xs text-gray-500 capitalize">{dayName}</p>
+            <h1 className="text-xl font-semibold tracking-tight">Diego</h1>
+            <p className="text-xs text-zinc-400 capitalize mt-0.5">{dayName}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-bold text-blue-600">Semana {currentWeek}/24</p>
-            <p className="text-xs text-gray-400">Plan 21K</p>
+            <p className="text-sm font-semibold">Sem. {currentWeek}/24</p>
+            <p className="text-xs text-zinc-400">Plan 21K</p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
+      <div className="max-w-2xl mx-auto px-5 py-5 space-y-3">
         {loading ? (
-          <p className="text-center text-gray-500 py-12 text-lg">Cargando...</p>
+          <p className="text-center text-zinc-400 py-12 text-sm">Cargando...</p>
         ) : (
           <>
-            {/* Nutrición card */}
-            <a href="/nutricion" className="block bg-white rounded-xl border-2 border-gray-200 hover:border-green-400 transition p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-bold text-gray-900">🍎 Nutrición</h2>
-                <span className={`text-sm font-bold ${calPct >= 90 ? 'text-green-600' : 'text-orange-500'}`}>
-                  {calPct}%
-                </span>
+            {/* Nutricion */}
+            <a href="/nutricion" className="block bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Nutricion</span>
+                <span className="text-xs text-zinc-400">{calPct}%</span>
               </div>
-              <div className="space-y-2">
+              <div className="flex items-end gap-4 mb-4">
                 <div>
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Calorías</span>
-                    <span>{calories} / {TARGET_CALORIES} kcal</span>
-                  </div>
-                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${calPct}%` }} />
-                  </div>
+                  <p className="text-4xl font-black tracking-tight">{calories.toLocaleString()}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">de {TARGET_CALORIES.toLocaleString()} kcal</p>
                 </div>
-                <div>
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Proteína</span>
-                    <span>{Math.round(protein)}g / {TARGET_PROTEIN}g</span>
-                  </div>
-                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${protPct}%` }} />
-                  </div>
+                <div className="mb-1">
+                  <p className="text-xl font-bold tracking-tight">{Math.round(protein)}g</p>
+                  <p className="text-xs text-zinc-400">prot / {TARGET_PROTEIN}g</p>
                 </div>
               </div>
-              <div className="flex gap-3 mt-3">
-                <span className={`text-xs px-2 py-1 rounded-full ${creatine ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
-                  {creatine ? '⚡ Creatina ✓' : '⚡ Creatina pendiente'}
-                </span>
-                <span className={`text-xs px-2 py-1 rounded-full ${magnesium ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-400'}`}>
-                  {magnesium ? '🌙 Mg ✓' : '🌙 Mg pendiente'}
-                </span>
+              <div className="space-y-1.5">
+                <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-zinc-900 rounded-full transition-all" style={{ width: `${calPct}%` }} />
+                </div>
+                <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full transition-all" style={{ width: `${protPct}%` }} />
+                </div>
+              </div>
+              <div className="flex gap-4 mt-3">
+                <span className={`text-xs ${creatine ? 'text-zinc-900 font-semibold' : 'text-zinc-300'}`}>Creatina {creatine ? '·' : ''}</span>
+                <span className={`text-xs ${magnesium ? 'text-zinc-900 font-semibold' : 'text-zinc-300'}`}>Magnesio {magnesium ? '·' : ''}</span>
               </div>
             </a>
 
-            {/* Gym card */}
-            <a href="/gym" className="block bg-white rounded-xl border-2 border-gray-200 hover:border-purple-400 transition p-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold text-gray-900">🏋️ Gym</h2>
-                {gymCheckedIn && <span className="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded-full">✓ Registrado</span>}
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl">
-                  {CYCLE_DAYS[gymDay]?.emoji || '💪'}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Día {gymDay}</p>
-                  <p className="text-sm text-gray-600">{CYCLE_DAYS[gymDay]?.name}</p>
-                </div>
-              </div>
-            </a>
-
-            {/* Running card */}
-            <a href="/running" className="block bg-white rounded-xl border-2 border-gray-200 hover:border-blue-400 transition p-4">
+            {/* Gym */}
+            <a href="/gym" className="block bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="font-bold text-gray-900">🏃 Running</h2>
-                <span className="text-xs text-blue-600 font-bold">Sem. {currentWeek}/24</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Gym</span>
+                {gymCheckedIn && <span className="text-xs font-semibold text-zinc-900">Registrado</span>}
+              </div>
+              <p className="text-lg font-semibold tracking-tight">Dia {gymDay}</p>
+              <p className="text-sm text-zinc-400 mt-0.5">{CYCLE_NAMES[gymDay]}</p>
+            </a>
+
+            {/* Running */}
+            <a href="/running" className="block bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Running</span>
+                <span className="text-xs text-zinc-400">Sem. {currentWeek}/24</span>
               </div>
               {recentRun ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-xl">🏃</div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{recentRun.distance_km}km · {recentRun.type}</p>
-                    <div className="flex gap-2 text-xs text-gray-500">
-                      {recentRun.duration_sec && <span>{Math.round(recentRun.duration_sec / 60)}min</span>}
-                      {recentRun.avg_hr && <span>❤️ {recentRun.avg_hr} bpm</span>}
-                      <span>{new Date(recentRun.date + 'T12:00:00').toLocaleDateString('es-PA', { weekday: 'short', day: 'numeric' })}</span>
-                    </div>
-                  </div>
-                </div>
+                <>
+                  <p className="text-lg font-semibold tracking-tight">{recentRun.distance_km} km</p>
+                  <p className="text-sm text-zinc-400 mt-0.5">
+                    {recentRun.type} · {Math.round(recentRun.duration_sec / 60)} min
+                    {recentRun.avg_hr ? ` · ${recentRun.avg_hr} bpm` : ''}
+                  </p>
+                </>
               ) : (
-                <p className="text-sm text-gray-400">No hay carreras aún — toca para empezar</p>
+                <p className="text-sm text-zinc-400">Sin carreras aun</p>
               )}
             </a>
 
             {/* Quick actions */}
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-4">
-              <h2 className="font-bold text-gray-900 mb-3">⚡ Acciones rápidas</h2>
-              <div className="grid grid-cols-2 gap-2">
-                <a href="/nutricion" className="bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg py-3 text-center text-sm font-semibold text-green-700 transition">
-                  🍎 + Comida
-                </a>
-                <a href="/running" className="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg py-3 text-center text-sm font-semibold text-blue-700 transition">
-                  🏃 + Carrera
-                </a>
-                <a href="/gym" className="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg py-3 text-center text-sm font-semibold text-purple-700 transition">
-                  🏋️ Check-in gym
-                </a>
-                <a href="/nutricion" className="bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg py-3 text-center text-sm font-semibold text-orange-700 transition">
-                  💊 Suplementos
-                </a>
-              </div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <a href="/nutricion" className="bg-zinc-900 text-white rounded-xl py-3 text-center text-sm font-semibold hover:bg-zinc-700 transition-colors">
+                + Comida
+              </a>
+              <a href="/running" className="bg-zinc-900 text-white rounded-xl py-3 text-center text-sm font-semibold hover:bg-zinc-700 transition-colors">
+                + Carrera
+              </a>
+              <a href="/gym" className="border border-zinc-200 bg-white text-zinc-700 rounded-xl py-3 text-center text-sm font-semibold hover:border-zinc-400 transition-colors">
+                Check-in gym
+              </a>
+              <a href="/nutricion" className="border border-zinc-200 bg-white text-zinc-700 rounded-xl py-3 text-center text-sm font-semibold hover:border-zinc-400 transition-colors">
+                Suplementos
+              </a>
             </div>
           </>
         )}

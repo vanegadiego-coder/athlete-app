@@ -9,63 +9,58 @@ interface Props {
   targetProtein: number;
 }
 
-function Bar({ value, target, color }: { value: number; target: number; color: string }) {
-  const pct = Math.min(100, Math.round((value / target) * 100));
-  return (
-    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-      <div
-        className={`h-full rounded-full transition-all duration-500 ${color}`}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
-  );
-}
-
 export default function MacroProgress({ calories, protein, carbs, fat, targetCalories, targetProtein }: Props) {
-  const calPct = Math.round((calories / targetCalories) * 100);
-  const protPct = Math.round((protein / targetProtein) * 100);
+  const calPct = Math.min(100, Math.round((calories / targetCalories) * 100));
+  const protPct = Math.min(100, Math.round((protein / targetProtein) * 100));
   const remaining = targetCalories - calories;
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-900">Macros de hoy</h2>
-        <span className={`text-sm font-semibold px-2 py-1 rounded-full ${calPct >= 90 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-          {calPct}%
-        </span>
+    <div className="bg-white rounded-xl border border-zinc-200 p-5">
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Hoy</p>
+        <p className="text-xs text-zinc-400">{calPct}%</p>
       </div>
 
-      {/* Calories big display */}
-      <div className="text-center py-2">
-        <p className="text-4xl font-black text-gray-900">{calories.toLocaleString()}</p>
-        <p className="text-sm text-gray-500">de {targetCalories.toLocaleString()} kcal</p>
-        <p className={`text-sm font-medium mt-1 ${remaining > 0 ? 'text-orange-600' : 'text-green-600'}`}>
-          {remaining > 0 ? `Faltan ${remaining} kcal` : `✓ Meta alcanzada (+${Math.abs(remaining)} extra)`}
+      <div className="flex items-end gap-5 mb-5 mt-3">
+        <div>
+          <p className="text-5xl font-black tracking-tight leading-none">{calories.toLocaleString()}</p>
+          <p className="text-xs text-zinc-400 mt-1">de {targetCalories.toLocaleString()} kcal</p>
+        </div>
+        <p className={`text-sm mb-1 ${remaining > 0 ? 'text-zinc-400' : 'text-zinc-900 font-semibold'}`}>
+          {remaining > 0 ? `faltan ${remaining}` : `meta lograda`}
         </p>
       </div>
 
-      <Bar value={calories} target={targetCalories} color="bg-orange-400" />
-
-      {/* Protein */}
-      <div className="space-y-1">
-        <div className="flex justify-between text-sm">
-          <span className="font-semibold text-gray-700">Proteína</span>
-          <span className={protPct >= 100 ? 'text-green-600 font-bold' : 'text-gray-600'}>
-            {Math.round(protein)}g / {targetProtein}g {protPct >= 100 ? '✓' : ''}
-          </span>
+      <div className="space-y-3">
+        <div>
+          <div className="flex justify-between text-xs text-zinc-400 mb-1.5">
+            <span>Calorias</span>
+            <span>{calories} / {targetCalories}</span>
+          </div>
+          <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+            <div className="h-full bg-zinc-900 rounded-full transition-all" style={{ width: `${calPct}%` }} />
+          </div>
         </div>
-        <Bar value={protein} target={targetProtein} color="bg-blue-500" />
+
+        <div>
+          <div className="flex justify-between text-xs text-zinc-400 mb-1.5">
+            <span>Proteina</span>
+            <span>{Math.round(protein)}g / {targetProtein}g</span>
+          </div>
+          <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+            <div className="h-full bg-blue-600 rounded-full transition-all" style={{ width: `${protPct}%` }} />
+          </div>
+        </div>
       </div>
 
-      {/* Carbs + Fat */}
-      <div className="grid grid-cols-2 gap-4 pt-1">
-        <div className="bg-yellow-50 rounded-lg p-3 text-center">
-          <p className="text-xs text-gray-500 mb-1">Carbohidratos</p>
-          <p className="text-xl font-bold text-yellow-700">{Math.round(carbs)}g</p>
+      <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-zinc-100">
+        <div>
+          <p className="text-xs text-zinc-400 mb-0.5">Carbohidratos</p>
+          <p className="text-lg font-bold tracking-tight">{Math.round(carbs)}g</p>
         </div>
-        <div className="bg-red-50 rounded-lg p-3 text-center">
-          <p className="text-xs text-gray-500 mb-1">Grasas</p>
-          <p className="text-xl font-bold text-red-600">{Math.round(fat)}g</p>
+        <div>
+          <p className="text-xs text-zinc-400 mb-0.5">Grasas</p>
+          <p className="text-lg font-bold tracking-tight">{Math.round(fat)}g</p>
         </div>
       </div>
     </div>

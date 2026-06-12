@@ -8,38 +8,47 @@ interface Props {
 export default function GymHistory({ history, cycleDays }: Props) {
   if (history.length === 0) {
     return (
-      <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center">
-        <p className="text-gray-400">No hay sesiones registradas aún.</p>
+      <div className="bg-white border border-zinc-200 rounded-xl p-6 text-center">
+        <p className="text-sm text-zinc-400">Sin sesiones registradas aun</p>
       </div>
     );
   }
 
   const attended = history.filter(h => h.attended).length;
-  const total = history.length;
-  const percentage = Math.round((attended / total) * 100);
+  const pct = Math.round((attended / history.length) * 100);
 
   return (
-    <div className="bg-white border-2 border-gray-200 rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-gray-900">📅 Historial reciente</h3>
-        <span className="text-sm font-semibold text-purple-700">{attended}/{total} sesiones · {percentage}%</span>
+    <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Historial</p>
+        <p className="text-sm font-semibold">{attended}/{history.length} · {pct}%</p>
       </div>
 
-      <div className="space-y-2">
+      {/* Attendance dots */}
+      <div className="px-5 py-4 border-b border-zinc-100">
+        <div className="flex gap-1.5 flex-wrap">
+          {history.map((log) => (
+            <div
+              key={log.id}
+              className={`w-6 h-6 rounded-md ${log.attended ? 'bg-zinc-900' : 'bg-zinc-100'}`}
+              title={log.date}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="divide-y divide-zinc-100">
         {history.map((log) => {
           const day = cycleDays[log.cycle_day as keyof typeof cycleDays];
           const date = new Date(log.date + 'T00:00:00').toLocaleDateString('es-PA', { weekday: 'short', day: 'numeric', month: 'short' });
           return (
-            <div key={log.id} className={`flex items-center justify-between p-3 rounded-lg ${log.attended ? 'bg-green-50' : 'bg-gray-50'}`}>
-              <div className="flex items-center gap-3">
-                <span className="text-lg">{log.attended ? '✅' : '❌'}</span>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{day?.emoji} {day?.name}</p>
-                  <p className="text-xs text-gray-500">{date}</p>
-                </div>
+            <div key={log.id} className="px-5 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">{day?.name || `Dia ${log.cycle_day}`}</p>
+                <p className="text-xs text-zinc-400 mt-0.5">{date}</p>
               </div>
-              <span className={`text-xs font-bold px-2 py-1 rounded-full ${log.attended ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600'}`}>
-                Día {log.cycle_day}
+              <span className={`text-xs font-semibold ${log.attended ? 'text-zinc-900' : 'text-zinc-300'}`}>
+                {log.attended ? 'Asistio' : 'No asistio'}
               </span>
             </div>
           );

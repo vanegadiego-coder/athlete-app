@@ -19,88 +19,77 @@ interface Props {
   today: string;
 }
 
-const ALL_DAYS: Record<number, { name: string; emoji: string }> = {
-  1: { name: 'Pecho / Hombro / Tríceps', emoji: '💪' },
-  2: { name: 'Espalda / Bíceps / Core', emoji: '🔙' },
-  3: { name: 'Pierna / Movilidad', emoji: '🦵' },
-  4: { name: 'Descanso gym + Carrera larga', emoji: '🏃' },
+const ALL_DAYS: Record<number, string> = {
+  1: 'Pecho · Hombro · Triceps',
+  2: 'Espalda · Biceps · Core',
+  3: 'Pierna · Movilidad',
+  4: 'Descanso gym',
 };
 
 export default function GymCycleCard({ currentDay, dayInfo, todayLog, onCheckIn, onChangeDay, saving, today }: Props) {
   const alreadyCheckedIn = todayLog?.date === today;
-  const [showDayPicker, setShowDayPicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   return (
-    <div className="bg-white border-2 border-purple-300 rounded-xl p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-4xl">{dayInfo.emoji}</span>
-          <div>
-            <p className="text-sm font-medium text-purple-600">Día {currentDay} del ciclo</p>
-            <h2 className="text-xl font-bold text-gray-900">{dayInfo.name}</h2>
-          </div>
+    <div className="bg-white rounded-xl border border-zinc-200 p-5">
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Dia {currentDay} del ciclo</p>
+          <h2 className="text-xl font-semibold tracking-tight">{dayInfo.name}</h2>
+          <p className="text-sm text-zinc-400 mt-1">{dayInfo.runNote}</p>
         </div>
         {!alreadyCheckedIn && (
           <button
-            onClick={() => setShowDayPicker(!showDayPicker)}
-            className="text-xs text-gray-400 hover:text-purple-600 underline transition"
+            onClick={() => setShowPicker(!showPicker)}
+            className="text-xs text-zinc-400 hover:text-zinc-700 underline underline-offset-2 transition-colors shrink-0 ml-4 mt-1"
           >
-            Corregir día
+            Corregir
           </button>
         )}
       </div>
 
-      {/* Day picker */}
-      {showDayPicker && (
-        <div className="mb-4 bg-purple-50 rounded-xl p-3 border border-purple-200">
-          <p className="text-xs font-semibold text-purple-700 mb-2">¿En qué día del ciclo estás?</p>
+      {showPicker && (
+        <div className="mb-5 border border-zinc-200 rounded-xl p-4">
+          <p className="text-xs font-semibold text-zinc-500 mb-3 uppercase tracking-wider">En que dia del ciclo estas hoy?</p>
           <div className="grid grid-cols-2 gap-2">
             {[1, 2, 3, 4].map(d => (
               <button
                 key={d}
-                onClick={() => { onChangeDay(d); setShowDayPicker(false); }}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold border-2 transition text-left ${
-                  d === currentDay ? 'bg-purple-500 border-purple-500 text-white' : 'bg-white border-purple-200 text-gray-700 hover:border-purple-400'
+                onClick={() => { onChangeDay(d); setShowPicker(false); }}
+                className={`rounded-lg px-3 py-2.5 text-sm font-semibold text-left transition-colors ${
+                  d === currentDay
+                    ? 'bg-zinc-900 text-white'
+                    : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100'
                 }`}
               >
-                <span className="mr-1">{ALL_DAYS[d].emoji}</span>
-                Día {d}
+                Dia {d} — {ALL_DAYS[d].split(' · ')[0]}
               </button>
             ))}
           </div>
-          <button onClick={() => setShowDayPicker(false)} className="text-xs text-gray-400 mt-2 w-full text-center">Cancelar</button>
+          <button onClick={() => setShowPicker(false)} className="text-xs text-zinc-400 mt-3 w-full text-center">Cancelar</button>
         </div>
       )}
 
-      <div className={`rounded-lg px-4 py-2 mb-5 text-sm font-medium ${dayInfo.canRun ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'}`}>
-        {dayInfo.runNote}
-      </div>
-
       {alreadyCheckedIn ? (
-        <div className={`rounded-xl p-4 text-center ${todayLog.attended ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-100 border-2 border-gray-300'}`}>
-          <p className="text-2xl mb-1">{todayLog.attended ? '✅' : '❌'}</p>
-          <p className="font-bold text-lg text-gray-800">{todayLog.attended ? 'Sesión completada' : 'Día registrado como descanso'}</p>
-          <p className="text-sm text-gray-500 mt-1">Registrado hoy</p>
+        <div className={`rounded-xl p-4 text-center border ${todayLog.attended ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-zinc-50 border-zinc-200'}`}>
+          <p className="font-semibold">{todayLog.attended ? 'Sesion completada' : 'Dia de descanso registrado'}</p>
         </div>
       ) : (
-        <div>
-          <p className="text-sm font-medium text-gray-600 mb-3 text-center">¿Fuiste al gym hoy?</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => onCheckIn(true)}
-              disabled={saving}
-              className="bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-lg transition"
-            >
-              ✅ Sí fui
-            </button>
-            <button
-              onClick={() => onCheckIn(false)}
-              disabled={saving}
-              className="bg-gray-200 hover:bg-gray-300 disabled:opacity-50 text-gray-700 font-bold py-4 rounded-xl text-lg transition"
-            >
-              ❌ No fui
-            </button>
-          </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => onCheckIn(true)}
+            disabled={saving}
+            className="bg-zinc-900 hover:bg-zinc-700 disabled:opacity-40 text-white font-semibold py-4 rounded-xl text-sm transition-colors"
+          >
+            Si fui
+          </button>
+          <button
+            onClick={() => onCheckIn(false)}
+            disabled={saving}
+            className="bg-zinc-50 hover:bg-zinc-100 disabled:opacity-40 text-zinc-600 font-semibold py-4 rounded-xl text-sm transition-colors"
+          >
+            No fui
+          </button>
         </div>
       )}
     </div>

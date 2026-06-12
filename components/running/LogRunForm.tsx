@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-const RUN_TYPES = ['Z2 Fácil', 'Larga Z2', 'Intervalos', 'Tempo', 'Fartlek', 'Z3 Moderado', 'Z1 Recovery', 'Rodaje', 'Carrera libre'];
+const RUN_TYPES = ['Z2 Facil', 'Larga Z2', 'Intervalos', 'Tempo', 'Fartlek', 'Z3 Moderado', 'Z1 Recovery', 'Rodaje', 'Carrera libre'];
 
 interface Props {
   userId: string;
@@ -14,7 +14,7 @@ interface Props {
 
 export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Props) {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [type, setType] = useState('Z2 Fácil');
+  const [type, setType] = useState('Z2 Facil');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
   const [avgHr, setAvgHr] = useState('');
@@ -25,7 +25,7 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
   const supabase = createClient();
 
   async function save() {
-    if (!distance || !duration) { setError('Distancia y duración son requeridas'); return; }
+    if (!distance || !duration) { setError('Distancia y duracion son requeridas'); return; }
     setSaving(true);
     const durationSec = Math.round(parseFloat(duration) * 60);
     const distKm = parseFloat(distance);
@@ -35,9 +35,7 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
     const avgPace = `${paceMin}:${String(paceSec).padStart(2, '0')} min/km`;
 
     const { error: dbErr } = await supabase.from('runs_log').insert({
-      user_id: userId,
-      date,
-      type,
+      user_id: userId, date, type,
       distance_km: distKm,
       duration_sec: durationSec,
       avg_pace: avgPace,
@@ -49,32 +47,30 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
     onSaved();
   }
 
-  const pace = distance && duration
-    ? (() => {
-        const sec = parseFloat(duration) * 60 / parseFloat(distance);
-        return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
-      })()
-    : null;
+  const pace = distance && duration ? (() => {
+    const sec = parseFloat(duration) * 60 / parseFloat(distance);
+    return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
+  })() : null;
+
+  const inputClass = "w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-400 placeholder:text-zinc-300";
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Registrar carrera</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
+          <h2 className="text-base font-semibold">Registrar carrera</h2>
+          <button onClick={onClose} className="text-zinc-300 hover:text-zinc-600 text-2xl leading-none transition-colors">×</button>
         </div>
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Fecha</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
-              <select value={type} onChange={e => setType(e.target.value)}
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Tipo</label>
+              <select value={type} onChange={e => setType(e.target.value)} className={inputClass}>
                 {RUN_TYPES.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
@@ -82,56 +78,44 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Distancia (km)</label>
-              <input type="number" step="0.1" value={distance} onChange={e => setDistance(e.target.value)}
-                placeholder="5.2"
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Distancia (km)</label>
+              <input type="number" step="0.1" value={distance} onChange={e => setDistance(e.target.value)} placeholder="5.2" className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Duración (min)</label>
-              <input type="number" step="0.5" value={duration} onChange={e => setDuration(e.target.value)}
-                placeholder="30"
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Duracion (min)</label>
+              <input type="number" step="0.5" value={duration} onChange={e => setDuration(e.target.value)} placeholder="30" className={inputClass} />
             </div>
           </div>
 
           {pace && (
-            <div className="bg-blue-50 rounded-lg px-3 py-2 text-center">
-              <p className="text-sm text-blue-700 font-semibold">Ritmo: {pace} min/km</p>
+            <div className="border border-zinc-200 rounded-xl px-4 py-3 text-center">
+              <p className="text-sm font-semibold">{pace} min/km</p>
+              <p className="text-xs text-zinc-400">ritmo promedio</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">BPM promedio</label>
-              <input type="number" value={avgHr} onChange={e => setAvgHr(e.target.value)}
-                placeholder="148"
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">BPM promedio</label>
+              <input type="number" value={avgHr} onChange={e => setAvgHr(e.target.value)} placeholder="148" className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">BPM máximo</label>
-              <input type="number" value={maxHr} onChange={e => setMaxHr(e.target.value)}
-                placeholder="172"
-                className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">BPM maximo</label>
+              <input type="number" value={maxHr} onChange={e => setMaxHr(e.target.value)} placeholder="172" className={inputClass} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">Notas</label>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)}
-              placeholder="¿Cómo te sentiste? ¿Condiciones?"
-              rows={2}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none" />
+            <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Notas</label>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Como te sentiste..." rows={2}
+              className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-400 resize-none placeholder:text-zinc-300" />
           </div>
 
-          {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p>}
+          {error && <p className="text-red-500 text-xs bg-red-50 rounded-lg p-3">{error}</p>}
 
-          <button
-            onClick={save}
-            disabled={saving}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition"
-          >
-            {saving ? 'Guardando...' : '✓ Guardar carrera'}
+          <button onClick={save} disabled={saving}
+            className="w-full bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+            {saving ? 'Guardando...' : 'Guardar carrera'}
           </button>
         </div>
       </div>
