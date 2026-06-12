@@ -1,0 +1,983 @@
+{
+  "meta": {
+    "atleta": "Diego",
+    "objetivo": "21K en el menor tiempo posible con el menor BPM posible",
+    "inicio_plan": "2026-06-03",
+    "fin_plan": "2026-11-18",
+    "zonas_fc": {
+      "Z1": "< 140 LPM",
+      "Z2": "140-153 LPM",
+      "Z3": "154-167 LPM",
+      "Z4": "168-181 LPM",
+      "Z5": "182+ LPM"
+    },
+    "ciclo_gym": {
+      "dia_1": "Pecho / Hombro / Tríceps",
+      "dia_2": "Espalda / Bíceps / Core",
+      "dia_3": "Pierna / Movilidad — sin correr",
+      "dia_4": "Descanso gym — carrera larga obligatoria"
+    }
+  },
+  "semanas": [
+    {
+      "semana": 1,
+      "titulo": "Arranque",
+      "bloque": 1,
+      "fecha_inicio": "2026-06-03",
+      "fecha_fin": "2026-06-09",
+      "descarga": false,
+      "km_totales_objetivo": 25,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 3,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min continuo Z2. Ritmo esperado 6'30\"-7'00\"/km. Si FC sube de 155 → caminar.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 40,
+          "distancia_km": 5.5,
+          "descripcion": "40min continuo Z2. Carrera larga de la semana. Nunca saltarla.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "5x(1min Z5 + 2min caminando). Calentamiento 5min Z1 + enfriamiento 5min Z1.",
+          "fc_objetivo": "182+ LPM en esfuerzo, < 140 LPM en recuperación",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2. Recuperación activa.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 2,
+      "titulo": "Construyendo base",
+      "bloque": 1,
+      "fecha_inicio": "2026-06-10",
+      "fecha_fin": "2026-06-16",
+      "descarga": false,
+      "km_totales_objetivo": 28,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 45,
+          "distancia_km": 6.5,
+          "descripcion": "45min continuo Z2. Mantener FC entre 140-153 en todo momento.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "6x(1min Z5 + 2min caminando). Calentamiento 5min + enfriamiento 5min.",
+          "fc_objetivo": "182+ LPM en esfuerzo, < 140 LPM en recuperación",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 3,
+      "titulo": "Descarga 1",
+      "bloque": 1,
+      "fecha_inicio": "2026-06-17",
+      "fecha_fin": "2026-06-23",
+      "descarga": true,
+      "km_totales_objetivo": 18,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 35,
+          "distancia_km": 5.0,
+          "descripcion": "35min Z2. Semana de descarga — volumen reducido 30%, intensidad se mantiene.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 20,
+          "distancia_km": 3.0,
+          "descripcion": "4x(1min Z5 + 2min caminando). Reducido por descarga.",
+          "fc_objetivo": "182+ LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional por ser semana de descarga.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 4,
+      "titulo": "Primer 8K",
+      "bloque": 1,
+      "fecha_inicio": "2026-06-24",
+      "fecha_fin": "2026-06-30",
+      "descarga": false,
+      "km_totales_objetivo": 31,
+      "hito": "Primer 8K en carrera larga",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 55,
+          "distancia_km": 8.0,
+          "descripcion": "55min continuo Z2. Primera vez llegando a ~8km. Mantener Z2 sin importar el ritmo.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 27,
+          "distancia_km": 4.0,
+          "descripcion": "7x(1min Z5 + 2min caminando). Calentamiento 5min + enfriamiento 5min.",
+          "fc_objetivo": "182+ LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 5,
+      "titulo": "Consolidando base",
+      "bloque": 1,
+      "fecha_inicio": "2026-07-01",
+      "fecha_fin": "2026-07-07",
+      "descarga": false,
+      "km_totales_objetivo": 34,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 60,
+          "distancia_km": 9.0,
+          "descripcion": "60min continuo Z2. El cuerpo empieza a adaptarse — ritmo debería sentirse más fácil.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 27,
+          "distancia_km": 4.0,
+          "descripcion": "7x(1min Z5 + 2min caminando).",
+          "fc_objetivo": "182+ LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 6,
+      "titulo": "Descarga 2 — Cierre Bloque 1",
+      "bloque": 1,
+      "fecha_inicio": "2026-07-08",
+      "fecha_fin": "2026-07-14",
+      "descarga": true,
+      "km_totales_objetivo": 22,
+      "hito": "Cierre de Bloque 1 — base aeróbica establecida",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 45,
+          "distancia_km": 6.5,
+          "descripcion": "45min Z2. Descarga — absorber las adaptaciones del Bloque 1.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 20,
+          "distancia_km": 3.0,
+          "descripcion": "4x(1min Z5 + 2min caminando). Reducido.",
+          "fc_objetivo": "182+ LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 7,
+      "titulo": "Inicio Bloque 2 — Primer Tempo",
+      "bloque": 2,
+      "fecha_inicio": "2026-07-15",
+      "fecha_fin": "2026-07-21",
+      "descarga": false,
+      "km_totales_objetivo": 36,
+      "hito": "Primer entrenamiento Tempo Z3",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 65,
+          "distancia_km": 10.0,
+          "descripcion": "65min continuo Z2. Primer doble dígito en carrera larga.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "5min Z1 calentamiento + 20min continuo Z3 + 5min Z1 enfriamiento. Primer Tempo — incómodo pero sostenible.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 8,
+      "titulo": "Alternando Intervalos y Tempo",
+      "bloque": 2,
+      "fecha_inicio": "2026-07-22",
+      "fecha_fin": "2026-07-28",
+      "descarga": false,
+      "km_totales_objetivo": 38,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 70,
+          "distancia_km": 11.0,
+          "descripcion": "70min continuo Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "5x(2min Z4-5 + 2min caminando). Progresión de 1min a 2min por repetición.",
+          "fc_objetivo": "168-182+ LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 9,
+      "titulo": "Descarga 3",
+      "bloque": 2,
+      "fecha_inicio": "2026-07-29",
+      "fecha_fin": "2026-08-04",
+      "descarga": true,
+      "km_totales_objetivo": 24,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 50,
+          "distancia_km": 7.5,
+          "descripcion": "50min Z2. Semana de descarga — absorber adaptaciones del umbral.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "5min calentamiento + 15min Z3 + 5min enfriamiento. Reducido por descarga.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 10,
+      "titulo": "Subiendo umbral",
+      "bloque": 2,
+      "fecha_inicio": "2026-08-05",
+      "fecha_fin": "2026-08-11",
+      "descarga": false,
+      "km_totales_objetivo": 41,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 75,
+          "distancia_km": 12.0,
+          "descripcion": "75min continuo Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 35,
+          "distancia_km": 5.5,
+          "descripcion": "5min calentamiento + 25min continuo Z3 + 5min enfriamiento.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 11,
+      "titulo": "Tempo largo + Intervalos 2min",
+      "bloque": 2,
+      "fecha_inicio": "2026-08-12",
+      "fecha_fin": "2026-08-18",
+      "descarga": false,
+      "km_totales_objetivo": 43,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 80,
+          "distancia_km": 13.0,
+          "descripcion": "80min continuo Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 32,
+          "distancia_km": 5.0,
+          "descripcion": "5x(2min Z4-5 + 2min recuperación trotando suave). Calentamiento 5min + enfriamiento 5min.",
+          "fc_objetivo": "168-182+ LPM en esfuerzo, 140-153 LPM en recuperación",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 12,
+      "titulo": "Descarga 4 — Cierre Bloque 2",
+      "bloque": 2,
+      "fecha_inicio": "2026-08-19",
+      "fecha_fin": "2026-08-25",
+      "descarga": true,
+      "km_totales_objetivo": 26,
+      "hito": "Cierre de Bloque 2 — umbral aeróbico establecido",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 55,
+          "distancia_km": 8.5,
+          "descripcion": "55min Z2. Descarga — asimilar adaptaciones del Bloque 2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "5min calentamiento + 15min Z3 + 5min enfriamiento. Reducido.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 13,
+      "titulo": "Inicio Bloque 3 — Primer Progresivo",
+      "bloque": 3,
+      "fecha_inicio": "2026-08-26",
+      "fecha_fin": "2026-09-01",
+      "descarga": false,
+      "km_totales_objetivo": 45,
+      "hito": "Primer carrera Progresiva Z2→Z3",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Progresivo",
+          "duracion_min": 80,
+          "distancia_km": 13.0,
+          "descripcion": "40min Z2 + 25min Z3 + 15min Z2. Solo si las piernas están recuperadas del Día 3. Si hay duda → mantener Z2 puro.",
+          "fc_objetivo": "140-153 LPM en Z2, 154-167 LPM en Z3",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 38,
+          "distancia_km": 6.0,
+          "descripcion": "5min calentamiento + 28min continuo Z3 + 5min enfriamiento.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 14,
+      "titulo": "Especificidad — Intervalos 3min",
+      "bloque": 3,
+      "fecha_inicio": "2026-09-02",
+      "fecha_fin": "2026-09-08",
+      "descarga": false,
+      "km_totales_objetivo": 47,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 85,
+          "distancia_km": 14.0,
+          "descripcion": "85min continuo Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 35,
+          "distancia_km": 5.5,
+          "descripcion": "5x(3min Z4 + 90seg recuperación trotando). Calentamiento 5min + enfriamiento 5min. Intervalos más largos = más específicos para 21K.",
+          "fc_objetivo": "168-181 LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 15,
+      "titulo": "Descarga 5",
+      "bloque": 3,
+      "fecha_inicio": "2026-09-09",
+      "fecha_fin": "2026-09-15",
+      "descarga": true,
+      "km_totales_objetivo": 28,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 60,
+          "distancia_km": 9.5,
+          "descripcion": "60min Z2. Descarga — recuperar para semanas de pico.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "5min calentamiento + 15min Z3 + 5min enfriamiento. Reducido.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 16,
+      "titulo": "Primer 15K",
+      "bloque": 3,
+      "fecha_inicio": "2026-09-16",
+      "fecha_fin": "2026-09-22",
+      "descarga": false,
+      "km_totales_objetivo": 50,
+      "hito": "Primer 15K en carrera larga",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Progresivo",
+          "duracion_min": 95,
+          "distancia_km": 15.0,
+          "descripcion": "50min Z2 + 30min Z3 + 15min Z2. Hito importante — primer 15K. Solo si las piernas están bien.",
+          "fc_objetivo": "140-153 LPM en Z2, 154-167 LPM en Z3",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 35,
+          "distancia_km": 5.5,
+          "descripcion": "5x(3min Z4 + 90seg recuperación). Calentamiento 5min + enfriamiento 5min.",
+          "fc_objetivo": "168-181 LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 17,
+      "titulo": "Pico de volumen",
+      "bloque": 3,
+      "fecha_inicio": "2026-09-23",
+      "fecha_fin": "2026-09-29",
+      "descarga": false,
+      "km_totales_objetivo": 53,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 100,
+          "distancia_km": 16.5,
+          "descripcion": "100min continuo Z2. Volumen máximo del plan — mantener Z2 sin importar el ritmo.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 40,
+          "distancia_km": 6.5,
+          "descripcion": "5min calentamiento + 30min continuo Z3 + 5min enfriamiento. Tempo máximo del plan.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 18,
+      "titulo": "Descarga 6",
+      "bloque": 3,
+      "fecha_inicio": "2026-09-30",
+      "fecha_fin": "2026-10-06",
+      "descarga": true,
+      "km_totales_objetivo": 30,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 65,
+          "distancia_km": 10.5,
+          "descripcion": "65min Z2. Descarga después del pico de volumen.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 25,
+          "distancia_km": 4.0,
+          "descripcion": "4x(3min Z4 + 90seg recuperación). Reducido.",
+          "fc_objetivo": "168-181 LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 19,
+      "titulo": "Primer 17K",
+      "bloque": 3,
+      "fecha_inicio": "2026-10-07",
+      "fecha_fin": "2026-10-13",
+      "descarga": false,
+      "km_totales_objetivo": 52,
+      "hito": "Primer 17K en carrera larga",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Progresivo",
+          "duracion_min": 105,
+          "distancia_km": 17.0,
+          "descripcion": "60min Z2 + 30min Z3 + 15min Z2. El cuerpo ya conoce estas distancias — mantener control.",
+          "fc_objetivo": "140-153 LPM en Z2, 154-167 LPM en Z3",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 40,
+          "distancia_km": 6.5,
+          "descripcion": "5min calentamiento + 30min Z3 + 5min enfriamiento.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 20,
+      "titulo": "Primer 19K — Cierre Bloque 3",
+      "bloque": 3,
+      "fecha_inicio": "2026-10-14",
+      "fecha_fin": "2026-10-20",
+      "descarga": false,
+      "km_totales_objetivo": 54,
+      "hito": "Primer 19K — distancia máxima del plan",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 115,
+          "distancia_km": 19.0,
+          "descripcion": "115min continuo Z2. Distancia máxima del plan. El 21K nunca será la distancia más larga que hayas hecho — solo la primera vez que la corres completo.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 35,
+          "distancia_km": 5.5,
+          "descripcion": "5x(3min Z4 + 90seg recuperación). Calentamiento 5min + enfriamiento 5min.",
+          "fc_objetivo": "168-181 LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "30min suave Z2.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 21,
+      "titulo": "Inicio Taper — Volumen -30%",
+      "bloque": 4,
+      "fecha_inicio": "2026-10-21",
+      "fecha_fin": "2026-10-27",
+      "descarga": false,
+      "km_totales_objetivo": 38,
+      "hito": "Inicio del Taper",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 75,
+          "distancia_km": 12.0,
+          "descripcion": "75min Z2. Taper — volumen baja 30%. La intensidad se mantiene. El cuerpo empieza a acumular energía.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 30,
+          "distancia_km": 4.5,
+          "descripcion": "5min calentamiento + 20min Z3 + 5min enfriamiento. Duración reducida, intensidad igual.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 25,
+          "distancia_km": 3.5,
+          "descripcion": "25min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 22,
+      "titulo": "Taper — Volumen -50%",
+      "bloque": 4,
+      "fecha_inicio": "2026-10-28",
+      "fecha_fin": "2026-11-03",
+      "descarga": false,
+      "km_totales_objetivo": 27,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 55,
+          "distancia_km": 9.0,
+          "descripcion": "55min Z2. Volumen al 50% del pico. Las piernas deben sentirse frescas y con ganas.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Intervalos",
+          "duracion_min": 25,
+          "distancia_km": 4.0,
+          "descripcion": "4x(2min Z4 + 2min recuperación). Corto pero intenso — mantener el sistema activo.",
+          "fc_objetivo": "168-181 LPM en esfuerzo",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 20,
+          "distancia_km": 3.0,
+          "descripcion": "20min suave Z2. Opcional.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 23,
+      "titulo": "Taper Final — Activación",
+      "bloque": 4,
+      "fecha_inicio": "2026-11-04",
+      "fecha_fin": "2026-11-10",
+      "descarga": false,
+      "km_totales_objetivo": 16,
+      "hito": null,
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 4,
+          "tipo": "Larga Z2",
+          "duracion_min": 35,
+          "distancia_km": 5.5,
+          "descripcion": "35min Z2. Volumen mínimo — las piernas están cargadas de energía. No forzar nada.",
+          "fc_objetivo": "140-153 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 1,
+          "tipo": "Tempo Z3",
+          "duracion_min": 20,
+          "distancia_km": 3.0,
+          "descripcion": "5min calentamiento + 10min Z3 + 5min enfriamiento. Solo para mantener el sistema activo.",
+          "fc_objetivo": "154-167 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 15,
+          "distancia_km": 2.0,
+          "descripcion": "15min muy suave. Opcional — solo si las piernas lo piden.",
+          "fc_objetivo": "140-150 LPM",
+          "opcional": true
+        }
+      ]
+    },
+    {
+      "semana": 24,
+      "titulo": "Semana de Carrera — 21K",
+      "bloque": 4,
+      "fecha_inicio": "2026-11-11",
+      "fecha_fin": "2026-11-18",
+      "descarga": false,
+      "km_totales_objetivo": 25,
+      "hito": "🏁 CARRERA — 21K",
+      "definida": true,
+      "carreras": [
+        {
+          "dia_ciclo": 2,
+          "tipo": "Z2 Fácil",
+          "duracion_min": 20,
+          "distancia_km": 3.0,
+          "descripcion": "20min muy suave Z2. Lunes o martes de la semana de carrera — activación final. Nada más.",
+          "fc_objetivo": "140-150 LPM",
+          "opcional": false
+        },
+        {
+          "dia_ciclo": 4,
+          "tipo": "Carrera Oficial",
+          "duracion_min": null,
+          "distancia_km": 21.1,
+          "descripcion": "🏁 21K — Media Maratón. Todo lo entrenado en 24 semanas se ejecuta hoy. Salir controlado los primeros 5K en Z2, mantener Z3 del km 5 al 18, vaciar los últimos 3K. Confiar en el proceso.",
+          "fc_objetivo": "140-153 LPM primeros 5K, 154-167 LPM km 5-18, máximo esfuerzo km 18-21",
+          "opcional": false
+        }
+      ]
+    }
+  ]
+}
