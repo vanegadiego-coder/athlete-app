@@ -72,6 +72,15 @@ export default function GymPage() {
     setLoading(false);
   }
 
+  async function changeDay(day: number) {
+    await supabase.from('gym_cycle').upsert({
+      user_id: USER_ID,
+      current_day: day,
+      last_updated: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+    setCurrentDay(day);
+  }
+
   async function checkIn(attended: boolean) {
     setSaving(true);
     const day = CYCLE_DAYS[currentDay as keyof typeof CYCLE_DAYS];
@@ -132,6 +141,7 @@ export default function GymPage() {
           dayInfo={day}
           todayLog={todayLog}
           onCheckIn={checkIn}
+          onChangeDay={changeDay}
           saving={saving}
           today={today}
         />

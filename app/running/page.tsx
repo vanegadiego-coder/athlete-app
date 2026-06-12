@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import WeeklyPlan from '@/components/running/WeeklyPlan';
+import DayCalendar from '@/components/running/DayCalendar';
 import LogRunForm from '@/components/running/LogRunForm';
 import RunHistory from '@/components/running/RunHistory';
 
@@ -12,48 +12,42 @@ const USER_ID = '00000000-0000-0000-0000-000000000001';
 const PLAN_START = new Date('2026-06-03');
 
 function getCurrentWeek(): number {
-  const now = new Date();
-  const diff = now.getTime() - PLAN_START.getTime();
-  const week = Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
-  return Math.max(1, Math.min(week, 24));
+  const diff = new Date().getTime() - PLAN_START.getTime();
+  return Math.max(1, Math.min(Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1, 24));
 }
 
 export default function RunningPage() {
   const [runs, setRuns] = useState<any[]>([]);
   const [weekPlan, setWeekPlan] = useState<any>(null);
+  const [gymCycleDay, setGymCycleDay] = useState<number>(1);
   const [showLogForm, setShowLogForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const currentWeek = getCurrentWeek();
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
-    const [runsRes, planRes] = await Promise.all([
-      supabase.from('runs_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(20),
+    const [runsRes, planRes, cycleRes] = await Promise.all([
+      supabase.from('runs_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(30),
       supabase.from('training_plan').select('*, training_runs(*)').eq('week_number', currentWeek).single(),
+      supabase.from('gym_cycle').select('current_day').eq('user_id', USER_ID).single(),
     ]);
     setRuns(runsRes.data || []);
     setWeekPlan(planRes.data || null);
+    if (cycleRes.data) setGymCycleDay(cycleRes.data.current_day);
     setLoading(false);
   }
 
-  const thisWeekRuns = runs.filter(r => {
-    const d = new Date(r.date);
-    const weekStart = new Date(PLAN_START);
-    weekStart.setDate(PLAN_START.getDate() + (currentWeek - 1) * 7);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    return d >= weekStart && d <= weekEnd;
-  });
-
-  const totalKmWeek = thisWeekRuns.reduce((s, r) => s + (r.distance_km || 0), 0);
   const totalKmAll = runs.reduce((s, r) => s + (r.distance_km || 0), 0);
   const runsWithHr = runs.filter(r => r.avg_hr);
   const avgBpm = runsWithHr.length > 0
     ? Math.round(runsWithHr.reduce((s, r) => s + r.avg_hr, 0) / runsWithHr.length)
     : 0;
+
+  const todayRun = runs.find(r => r.date === today);
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -78,12 +72,8 @@ export default function RunningPage() {
           <p className="text-center text-gray-500 py-8">Cargando...</p>
         ) : (
           <>
-            {/* Stats bar */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white rounded-xl border-2 border-gray-200 p-3 text-center">
-                <p className="text-2xl font-black text-blue-600">{totalKmWeek.toFixed(1)}</p>
-                <p className="text-xs text-gray-500 mt-0.5">km esta semana</p>
-              </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-3">
               <div className="bg-white rounded-xl border-2 border-gray-200 p-3 text-center">
                 <p className="text-2xl font-black text-green-600">{totalKmAll.toFixed(0)}</p>
                 <p className="text-xs text-gray-500 mt-0.5">km totales</p>
@@ -94,7 +84,15 @@ export default function RunningPage() {
               </div>
             </div>
 
-            <WeeklyPlan week={currentWeek} plan={weekPlan} completedRuns={thisWeekRuns} />
+            <DayCalendar
+              week={currentWeek}
+              weekPlan={weekPlan}
+              gymCycleDay={gymCycleDay}
+              today={today}
+              loggedRuns={runs}
+              onLogRun={() => setShowLogForm(true)}
+            />
+
             <RunHistory runs={runs} />
           </>
         )}

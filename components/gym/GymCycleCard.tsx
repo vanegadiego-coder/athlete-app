@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 interface DayInfo {
   name: string;
   emoji: string;
@@ -12,22 +14,63 @@ interface Props {
   dayInfo: DayInfo;
   todayLog: any;
   onCheckIn: (attended: boolean) => void;
+  onChangeDay: (day: number) => void;
   saving: boolean;
   today: string;
 }
 
-export default function GymCycleCard({ currentDay, dayInfo, todayLog, onCheckIn, saving, today }: Props) {
+const ALL_DAYS: Record<number, { name: string; emoji: string }> = {
+  1: { name: 'Pecho / Hombro / Tríceps', emoji: '💪' },
+  2: { name: 'Espalda / Bíceps / Core', emoji: '🔙' },
+  3: { name: 'Pierna / Movilidad', emoji: '🦵' },
+  4: { name: 'Descanso gym + Carrera larga', emoji: '🏃' },
+};
+
+export default function GymCycleCard({ currentDay, dayInfo, todayLog, onCheckIn, onChangeDay, saving, today }: Props) {
   const alreadyCheckedIn = todayLog?.date === today;
+  const [showDayPicker, setShowDayPicker] = useState(false);
 
   return (
     <div className="bg-white border-2 border-purple-300 rounded-xl p-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-4xl">{dayInfo.emoji}</span>
-        <div>
-          <p className="text-sm font-medium text-purple-600">Día {currentDay} del ciclo</p>
-          <h2 className="text-xl font-bold text-gray-900">{dayInfo.name}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-4xl">{dayInfo.emoji}</span>
+          <div>
+            <p className="text-sm font-medium text-purple-600">Día {currentDay} del ciclo</p>
+            <h2 className="text-xl font-bold text-gray-900">{dayInfo.name}</h2>
+          </div>
         </div>
+        {!alreadyCheckedIn && (
+          <button
+            onClick={() => setShowDayPicker(!showDayPicker)}
+            className="text-xs text-gray-400 hover:text-purple-600 underline transition"
+          >
+            Corregir día
+          </button>
+        )}
       </div>
+
+      {/* Day picker */}
+      {showDayPicker && (
+        <div className="mb-4 bg-purple-50 rounded-xl p-3 border border-purple-200">
+          <p className="text-xs font-semibold text-purple-700 mb-2">¿En qué día del ciclo estás?</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 2, 3, 4].map(d => (
+              <button
+                key={d}
+                onClick={() => { onChangeDay(d); setShowDayPicker(false); }}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold border-2 transition text-left ${
+                  d === currentDay ? 'bg-purple-500 border-purple-500 text-white' : 'bg-white border-purple-200 text-gray-700 hover:border-purple-400'
+                }`}
+              >
+                <span className="mr-1">{ALL_DAYS[d].emoji}</span>
+                Día {d}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setShowDayPicker(false)} className="text-xs text-gray-400 mt-2 w-full text-center">Cancelar</button>
+        </div>
+      )}
 
       <div className={`rounded-lg px-4 py-2 mb-5 text-sm font-medium ${dayInfo.canRun ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'}`}>
         {dayInfo.runNote}
