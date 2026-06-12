@@ -45,26 +45,15 @@ export default function LineChart({ points, targetLine, height = 72, inverted = 
     <div className="w-full">
       <svg width="100%" viewBox={`0 0 ${w} ${height + 20}`} preserveAspectRatio="xMidYMid meet">
         {targetLine && (
-          <line
-            x1={padX} y1={toY(targetLine)}
-            x2={w - padX} y2={toY(targetLine)}
-            stroke="#CBD5E1" strokeWidth="1" strokeDasharray="3 3"
-          />
+          <line x1={padX} y1={toY(targetLine)} x2={w - padX} y2={toY(targetLine)} stroke="#52525B" strokeWidth="1" strokeDasharray="3 3" />
         )}
 
-        <path d={pathData} fill="none" stroke="#18181B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathData} fill="none" stroke="#FAFAFA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
         {points.map((p, i) => p.value > 0 && (
           <g key={i}>
-            <circle cx={padX + i * step} cy={toY(p.value)} r="2.5" fill="#18181B" />
-            <text
-              x={padX + i * step}
-              y={height + 14}
-              textAnchor="middle"
-              fontSize="9"
-              fill="#A1A1AA"
-              fontFamily="system-ui"
-            >
+            <circle cx={padX + i * step} cy={toY(p.value)} r="2.5" fill="#FAFAFA" />
+            <text x={padX + i * step} y={height + 14} textAnchor="middle" fontSize="9" fill="#52525B" fontFamily="system-ui">
               {p.label}
             </text>
           </g>

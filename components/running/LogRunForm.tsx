@@ -52,25 +52,25 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
     return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
   })() : null;
 
-  const inputClass = "w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-400 placeholder:text-zinc-300";
+  const inputCls = "w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600";
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-4">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
           <h2 className="text-base font-semibold">Registrar carrera</h2>
-          <button onClick={onClose} className="text-zinc-300 hover:text-zinc-600 text-2xl leading-none transition-colors">×</button>
+          <button onClick={onClose} className="text-zinc-600 hover:text-zinc-300 text-2xl leading-none transition-colors">×</button>
         </div>
 
         <div className="p-5 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Fecha</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Fecha</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Tipo</label>
-              <select value={type} onChange={e => setType(e.target.value)} className={inputClass}>
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Tipo</label>
+              <select value={type} onChange={e => setType(e.target.value)} className={inputCls + " bg-zinc-800"}>
                 {RUN_TYPES.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
@@ -78,43 +78,43 @@ export default function LogRunForm({ userId, weekNumber, onClose, onSaved }: Pro
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Distancia (km)</label>
-              <input type="number" step="0.1" value={distance} onChange={e => setDistance(e.target.value)} placeholder="5.2" className={inputClass} />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Distancia (km)</label>
+              <input type="number" step="0.1" value={distance} onChange={e => setDistance(e.target.value)} placeholder="5.2" className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Duracion (min)</label>
-              <input type="number" step="0.5" value={duration} onChange={e => setDuration(e.target.value)} placeholder="30" className={inputClass} />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Duracion (min)</label>
+              <input type="number" step="0.5" value={duration} onChange={e => setDuration(e.target.value)} placeholder="30" className={inputCls} />
             </div>
           </div>
 
           {pace && (
-            <div className="border border-zinc-200 rounded-xl px-4 py-3 text-center">
+            <div className="border border-zinc-700 rounded-xl px-4 py-3 text-center">
               <p className="text-sm font-semibold">{pace} min/km</p>
-              <p className="text-xs text-zinc-400">ritmo promedio</p>
+              <p className="text-xs text-zinc-500">ritmo promedio</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">BPM promedio</label>
-              <input type="number" value={avgHr} onChange={e => setAvgHr(e.target.value)} placeholder="148" className={inputClass} />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">BPM promedio</label>
+              <input type="number" value={avgHr} onChange={e => setAvgHr(e.target.value)} placeholder="148" className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">BPM maximo</label>
-              <input type="number" value={maxHr} onChange={e => setMaxHr(e.target.value)} placeholder="172" className={inputClass} />
+              <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">BPM maximo</label>
+              <input type="number" value={maxHr} onChange={e => setMaxHr(e.target.value)} placeholder="172" className={inputCls} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Notas</label>
+            <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Notas</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Como te sentiste..." rows={2}
-              className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-zinc-400 resize-none placeholder:text-zinc-300" />
+              className={inputCls + " resize-none"} />
           </div>
 
-          {error && <p className="text-red-500 text-xs bg-red-50 rounded-lg p-3">{error}</p>}
+          {error && <p className="text-red-400 text-xs bg-red-950/50 border border-red-900 rounded-lg p-3">{error}</p>}
 
           <button onClick={save} disabled={saving}
-            className="w-full bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+            className="w-full bg-white hover:bg-zinc-100 disabled:bg-zinc-800 text-zinc-900 font-semibold py-3 rounded-xl transition-colors text-sm">
             {saving ? 'Guardando...' : 'Guardar carrera'}
           </button>
         </div>

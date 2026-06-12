@@ -66,7 +66,6 @@ export default function NutricionPage() {
     await loadData();
   }
 
-  // Build 7-day calorie chart
   const calorieBars = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() - (6 - i));
     const dateStr = d.toISOString().split('T')[0];
@@ -75,15 +74,15 @@ export default function NutricionPage() {
   });
 
   return (
-    <main className="min-h-screen bg-zinc-50">
-      <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
+    <main className="min-h-screen bg-zinc-950">
+      <div className="bg-zinc-950 border-b border-zinc-800 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3">
-          <a href="/" className="text-zinc-400 hover:text-zinc-600 transition-colors">←</a>
+          <a href="/" className="text-zinc-500 hover:text-zinc-300 transition-colors">←</a>
           <div className="flex-1">
             <h1 className="text-lg font-semibold tracking-tight">Nutricion</h1>
-            <p className="text-xs text-zinc-400 capitalize mt-0.5">{new Date().toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+            <p className="text-xs text-zinc-500 capitalize mt-0.5">{new Date().toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
           </div>
-          <button onClick={() => setShowAddForm(true)} className="bg-zinc-900 hover:bg-zinc-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          <button onClick={() => setShowAddForm(true)} className="bg-white hover:bg-zinc-100 text-zinc-900 font-semibold py-2 px-4 rounded-xl text-sm transition-colors">
             + Comida
           </button>
         </div>
@@ -91,7 +90,7 @@ export default function NutricionPage() {
 
       <div className="max-w-2xl mx-auto px-5 py-5 space-y-3">
         {loading ? (
-          <p className="text-center text-zinc-400 py-12 text-sm">Cargando...</p>
+          <p className="text-center text-zinc-600 py-12 text-sm">Cargando...</p>
         ) : (
           <>
             <MacroProgress
@@ -103,12 +102,11 @@ export default function NutricionPage() {
               targetProtein={TARGET_PROTEIN}
             />
 
-            {/* 7-day calorie chart */}
             {weekHistory.length > 0 && (
-              <div className="bg-white rounded-xl border border-zinc-200 p-5">
+              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Calorias — ultimos 7 dias</p>
-                  <p className="text-xs text-zinc-400">Meta {TARGET_CALORIES}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Calorias — 7 dias</p>
+                  <p className="text-xs text-zinc-600">Meta {TARGET_CALORIES}</p>
                 </div>
                 <BarChart bars={calorieBars} max={Math.max(TARGET_CALORIES * 1.1, ...calorieBars.map(b => b.value))} targetLine={TARGET_CALORIES} height={56} />
               </div>

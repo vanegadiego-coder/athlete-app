@@ -7,57 +7,51 @@ import { createClient } from '@/lib/supabase/client';
 import GymCycleCard from '@/components/gym/GymCycleCard';
 import GymHistory from '@/components/gym/GymHistory';
 
+const PLAN_START = new Date('2026-06-03T12:00:00');
+const PLAN_START_CYCLE = 3;
+
+function getCycleDay(date: Date): number {
+  const diff = Math.round((date.getTime() - PLAN_START.getTime()) / 86400000);
+  return ((PLAN_START_CYCLE - 1 + diff) % 4 + 4) % 4 + 1;
+}
+
 const CYCLE_DAYS = {
-  1: { name: 'Pecho · Hombro · Triceps', emoji: '💪', canRun: true, runNote: 'Intervalos o Tempo en la manana' },
-  2: { name: 'Espalda · Biceps · Core', emoji: '🔙', canRun: true, runNote: 'Z2 suave opcional' },
-  3: { name: 'Pierna · Movilidad', emoji: '🦵', canRun: false, runNote: 'Sin correr — siempre' },
-  4: { name: 'Descanso gym', emoji: '🏃', canRun: true, runNote: 'Carrera larga obligatoria' },
+  1: { name: 'Pecho · Hombro · Triceps', canRun: true, runNote: 'Intervalos o Tempo en la manana' },
+  2: { name: 'Espalda · Biceps · Core', canRun: true, runNote: 'Z2 suave opcional' },
+  3: { name: 'Pierna · Movilidad', canRun: false, runNote: 'Sin correr — siempre' },
+  4: { name: 'Descanso gym', canRun: true, runNote: 'Carrera larga obligatoria' },
 };
 
 const USER_ID = '00000000-0000-0000-0000-000000000001';
 
 export default function GymPage() {
-  const [currentDay, setCurrentDay] = useState<number>(1);
   const [todayLog, setTodayLog] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const supabase = createClient();
   const today = new Date().toISOString().split('T')[0];
+  const currentDay = getCycleDay(new Date());
 
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
     try {
-      const { data: cycleData } = await supabase.from('gym_cycle').select('*').eq('user_id', USER_ID).single();
-      if (cycleData) {
-        setCurrentDay(cycleData.current_day);
-      } else {
-        await supabase.from('gym_cycle').insert({ user_id: USER_ID, current_day: 1 });
-        setCurrentDay(1);
-      }
-      const { data: todayData } = await supabase.from('gym_log').select('*').eq('user_id', USER_ID).eq('date', today).single();
-      setTodayLog(todayData);
-      const { data: historyData } = await supabase.from('gym_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(20);
-      setHistory(historyData || []);
+      const [todayRes, histRes] = await Promise.all([
+        supabase.from('gym_log').select('*').eq('user_id', USER_ID).eq('date', today).single(),
+        supabase.from('gym_log').select('*').eq('user_id', USER_ID).order('date', { ascending: false }).limit(20),
+      ]);
+      setTodayLog(todayRes.data || null);
+      setHistory(histRes.data || []);
     } catch (err) { console.error(err); }
     setLoading(false);
-  }
-
-  async function changeDay(day: number) {
-    await supabase.from('gym_cycle').upsert({ user_id: USER_ID, current_day: day, last_updated: new Date().toISOString() }, { onConflict: 'user_id' });
-    setCurrentDay(day);
   }
 
   async function checkIn(attended: boolean) {
     setSaving(true);
     try {
-      const { error } = await supabase.from('gym_log').upsert({ user_id: USER_ID, date: today, cycle_day: currentDay, attended }, { onConflict: 'user_id,date' });
-      if (error) throw error;
-      const nextDay = (currentDay % 4) + 1;
-      await supabase.from('gym_cycle').upsert({ user_id: USER_ID, current_day: nextDay, last_updated: new Date().toISOString() }, { onConflict: 'user_id' });
-      setCurrentDay(nextDay);
+      await supabase.from('gym_log').upsert({ user_id: USER_ID, date: today, cycle_day: currentDay, attended }, { onConflict: 'user_id,date' });
       setTodayLog({ attended, cycle_day: currentDay, date: today });
       await loadData();
     } catch (err) { console.error(err); }
@@ -65,38 +59,36 @@ export default function GymPage() {
   }
 
   if (loading) {
-    return <div className="min-h-screen bg-zinc-50 flex items-center justify-center"><p className="text-zinc-400 text-sm">Cargando...</p></div>;
+    return <div className="min-h-screen bg-zinc-950 flex items-center justify-center"><p className="text-zinc-600 text-sm">Cargando...</p></div>;
   }
 
   const day = CYCLE_DAYS[currentDay as keyof typeof CYCLE_DAYS];
 
   return (
-    <main className="min-h-screen bg-zinc-50">
-      <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
+    <main className="min-h-screen bg-zinc-950">
+      <div className="bg-zinc-950 border-b border-zinc-800 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-3">
-          <a href="/" className="text-zinc-400 hover:text-zinc-600 transition-colors">←</a>
+          <a href="/" className="text-zinc-500 hover:text-zinc-300 transition-colors">←</a>
           <div>
             <h1 className="text-lg font-semibold tracking-tight">Gym</h1>
-            <p className="text-xs text-zinc-400">Ciclo rotativo de 4 dias</p>
+            <p className="text-xs text-zinc-500">Ciclo rotativo de 4 dias</p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 py-6 space-y-3">
+      <div className="max-w-2xl mx-auto px-5 py-5 space-y-3">
         <GymCycleCard
           currentDay={currentDay}
           dayInfo={day}
           todayLog={todayLog}
           onCheckIn={checkIn}
-          onChangeDay={changeDay}
           saving={saving}
           today={today}
         />
 
-        {/* Cycle indicator */}
         <div className="grid grid-cols-4 gap-2">
           {[1, 2, 3, 4].map(d => (
-            <div key={d} className={`rounded-lg py-3 text-center border transition-colors ${d === currentDay ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-400'}`}>
+            <div key={d} className={`rounded-xl py-3 text-center border transition-colors ${d === currentDay ? 'bg-white border-white text-zinc-900' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}`}>
               <p className="text-xs font-semibold">D{d}</p>
             </div>
           ))}

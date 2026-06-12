@@ -7,7 +7,7 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Diego · Athlete",
   description: "Tu app de entrenamiento",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Athlete" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Athlete" },
 };
 
 export const viewport: Viewport = {
@@ -15,7 +15,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#fafafa",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -24,9 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Athlete" />
       </head>
-      <body className="min-h-full bg-zinc-50 text-zinc-900 antialiased">{children}</body>
+      <body className="min-h-full bg-zinc-950 text-zinc-50 antialiased">{children}</body>
     </html>
   );
 }
